@@ -3,7 +3,7 @@
 Contributors: Sophie, Nick, Andrew, Reiko
 
 Deadlines:
-Milestone 1 - 28 Sept
-Milestone 2 - 5 Oct
-Milestone 3 - 2 Nov
-Milestone 4 and 5 - 16 Nov
+- [x] Milestone 1
+- [ ] Milestone 2 - Wed Oct 19
+- [ ] Milestone 3 - Wed Nov 2
+- [ ] Milestones 4,5 - Wed Nov 16
