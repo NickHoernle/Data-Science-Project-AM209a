@@ -89,6 +89,36 @@ In Content-Based Systems, delineating the features is often challenging. For tex
 
 \section*{Literature Review - Paper 2}
 
+\section*{Literature Review - The BellKor Solution to the Netflix Grand Prize}
+
+The grand prize solution to the Netflix challenge is important to consider, because despite its complexity, it serves as a kind of gold standard for recommendation systems. Also, the fact that the solution is a mixture of many models means that studying it will help teach us about a wide variety of models.
+
+There are a few techniques the BellKor team used that were important across models, though.
+
+One technique was computing baseline ratings for movies (which measures their overall quality, independently from a specific viewer) and users (which measures how critically they tend to rate movies generally, independently from any specific movies).
+
+They computed these baseline movie ratings (which they denote $b_i$) and user ratings (which they denote $b_u$) by solving a least squares problem in terms of the average overall rating $\mu$ and each individual rating $r_{ui}$, where they try to find $b_u$ and $b_i$ such that the following quantity is minimized:
+
+$$
+\sum_{\text{all ratings}} (r_{ui} - \mu - b_u - b_i)^2 + \lambda\left(\sum_u b_u^2 + \sum_i b_i^2\right)
+$$
+
+where $\lambda$ is a regularization parameter for the Ridge-regression-style penalty on large $b_u$ and $b_i$s, and we can think of the squared term as representing the true rating $r_{ui}$ minus its user and movie-specific baseline $b_{ui} \equiv \mu + b_u + b_i$, whose difference should never be 0 (because users do have preferences not explainable by the movie's overall quality and their overall criticality), but which should intuitively be relatively small.
+
+Once baselines are factored away, we can start predicting better and more consistent estimates of how much a user might actually like a movie.
+
+The BellKor team actually took this idea of baselines a bit further and made them time-dependent. It's reasonable to expect that a movie's general popularity might change over time (e.g. as it becomes more or less culturally relevant) or that a user's baseline might shift from day to day (e.g. depending on their mood). So they actually compute baselines for every movie and every user as a function of time, although in practice they don't use continuous functions, but rather a set of discrete estimates for time bins spanning the total time range of the dataset.
+
+The timescale over which these quantities vary is different; we expect movie baselines to shift slowly over months or years and user baselines to shift much more frequently. For movies, they bin their baselines in 10-week intervals. For users, because there isn't enough data to fully establish 1-day bins, they do a more complicated calculation that allows for gradual drift effects over long time periods as well as sudden "spikes" that are computed from day-specific data. This allows them to account for both long and short term changes in user baselines (which they note may even be caused by multiple people using the same user account, which many of us know from experience is a fairly common practice).
+
+One other important term they factor into their (movie and user-specific) baseline rating calculation is an adjustment to the movie baseline based on the number of other ratings users who rated that movie also gave on the same day. The intuitive justification they give for this adjustment is that certain movies tend to be rated differently when a user is rating them individually vs. alongside a lot of other movies in bulk. Those two processes, from a user-psychological perspective, are very distinct, yet they appear commingled in the same dataset. In particular, the paper argues that when users are bulk-rating movies, they tend to only rate movies that are particularly memorable over a long period of time, either for positive or negative reasons. In these cases, it may be that 50\% of the population will like the movie unmemorably, but another 50\% will hate it very memorably, so that only the negative ratings show up during bulk-rating sessions (which may be the most common type of rating session). This can bias recommendations in an unhelpful way, and so the extra term they include which controls for frequency helps remove that bias.
+
+Note that although most of this time-specific information is most useful for filling in predictions about the past, rather than the future (which we want to predict), the calculated baselines still help the model make better future predictions, on average.
+
+So, finally, all of these baseline components are computed again by a (more complex) gradient descent solution to a least-squares problem, with additional $\lambda$ terms to regularize the extra parameters (stil using effectively a Ridge penalty).
+
+After obtaining the baseline factors, they trained a variety of models to predict $r_{ui} - b_{ui}$, i.e. the difference between the true rating and the baseline. Models they used include time-modified versions of matrix factorization, nearest neighbor algorithms, restricted Boltzmann machines, and more. Their prediction for a given rating was a blend (weighted average) of the predictions of each of these models, and the weights of that average were also user and movie-specific. The way they compute the blend weights for each user and movie is complex (and will require reading several more papers to start grasping), but they used gradient boosted decision trees for some of the blend weight calculations.
+
 \end{document}
 
 
