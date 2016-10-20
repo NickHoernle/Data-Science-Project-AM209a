@@ -7,7 +7,7 @@
 % \oddsidemargin=0in
 % \textwidth=6.5in
 % \textheight=9.0in
-% \headsep=0.25in 
+% \headsep=0.25in
 
 % \linespread{1.1} % Line spacing
 
@@ -29,11 +29,10 @@
 %----------------------------------------------------------------------------------------
 
 \title{
-\vspace{1in}
+\vspace{1cm}
 \textmd{\textbf{AC209a Data Science Project: Data Science with User Ratings and Reviews}}\\
 % \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
 % \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
-\vspace{2cm}
 }
 
 \author{\textbf{Andrew, Sophie, Reiko, Nick}}
@@ -46,66 +45,46 @@
 \maketitle
 
 \section*{Introduction}
-	Modern technologies unleash the possibilities for customising user experiences, products and thereby increase customer satisfaction by personalising content
-	%https://www.analyticsvidhya.com/blog/2015/08/beginners-guide-learn-content-based-recommender-systems/
-	based on the past preferences of a specific user. Content based recommendation systems can further be extended to not only providing customers with content that they are most likely to enjoy and associate with but also for advertisment purposes. One could argue that it is only worthwhile advertising the right type of product and content to the right type of person. If this is not done the advertisement company not only runs the risk of alienating potential customers, but at a best case scenario simply wastes the time and money placed into delivering the specific advertisment content to the specific customer. It has been shown (\textit{insert one of out references here}b) that potential customers are more likely to respond to content that directly appeals to them. Such is the power of a system that is able to make these structured connections from an unstructured source of data, such as user reviews and ratings.
+	Modern technologies unleash the possibilities for customising user experiences and thereby increase customer satisfaction by personalising content \cite{beginners_guide}
+	based on the past preferences of a specific user. Content based recommendation systems can further be extended to not only provide customers with content that they are most likely to enjoy and associate with but also for advertisment purposes. It has been shown \cite{netflix} that potential customers are more likely to respond to content that directly appeals to them. Such is the power of a system that is able to make these structured connections from an unstructured source of data, such as user reviews and ratings.
 
 	In this project, we aim to achieve the following:
 	\begin{enumerate}
-		\item Select and prepare a suitable database of user ratings and reviews from Yelp Dataset Challenge (\url{https://www.yelp.com/dataset_challenge})
+		\item Select and prepare a suitable database of user ratings and reviews from ... TODO
 		\item Qualitatively, and quantitatively evaluate features and metrics upon which to train a statistical learning model.
 		\item Implement and evaluate the following prediction and recommendation engines: simple user rating prediction, content based sentiment and recommendation, clustering of product and collaborative filtering.
 		\item Decide upon the most appropriate recommendation based system for a particular setting and discuss some ethical considerations to be evaluated when making content based recommendations.
 	\end{enumerate}
 
-\section*{Project Description}
 
-\section*{Literature Review - Book Chapter 9}
-\par The application of recommendation systems is wide-ranging but most valuable to online retailers because of the "long tail" effect. Because online vendors are not confined by physical space, they have the option of selling many more obscure items, articles, movies, etc. to their customers. However, customers may not be aware that these items exist or need help finding them because the product pool is so large. Recommendation systems fill this need. \\
-\par Data is a recommendation system is usually presented in a utility matrix, with users by products. If we have numerical values representing the utility of an item to a user, for example, from user ratings, we would fill this in. However, often we can only insert a binary value here of 1 or 0, where a 1 refers to a user having bought or looked at the product or content and a 0 otherwise. Note that in general utility matrices are very sparse. In addition, the problem is often not to calculate a value for every blank in the utility matrix but rather just to generate some subset of items for which we think the utility value will be high. When combining binary and numerical values in this approach, we need to carefully choose scaling factors for the numerical values that will affect the resulting value. When computing user preference matrices from rating values, we should normalize the utilities by subtracting the average rating value for a user.\\
-\par There are two basic structures for recommendation systems (any many variations in between): Content-Based Systems, wherein similarity of items is measured by a generated set of features comparing the items to other items, and Collaborative-Filtering, wherein recommendations are generated based on similarity of ratings by users who have rated both items.\\
-In Content-Based Systems, delineating the features is often challenging. For text documents, we can compute TF.IDF scores for each word to try to determine which words most accurately characterize the document and then choose from a variety of distance measure between vectors of words. Again, sparseness in these vectors must be taken into account in computation measures. A system of feature generation that generalizes to almost any situation is user tagging. However, tagging relies on the willingness of users to go through the trouble of creating tags and requires that there are enough tags such that incorrect tags do not bias the system. \\
-\par To compute recommended items based on profile vectors for both users, and items, we can compute the cosine distance between the user and item vectors, scaling non-boolean values as discussed above. Random-hyperplane and locally-sensitive-hashing are techniques we should research to place items into utility buckets. \\
-\par Another method to consider for recommendations is to build a classifier that takes existing user ratings as the training set and predicts rating on other items. Decision trees are one option for this methodology, but we should look into other options as well. In the decision tree example, node values would be conditions involving one or more features of an item. Leaf values would determine whether or not an item would be liked. In general, construction of a tree like this tries to arrange that a leaf node either gets all positive examples or all negative examples. However, if the statistical significance of a minority group in a leaf node is small enough, we may leave it this way to avoid overfitting. Decision trees require a large amount of computation and a different tree for each user, so they are mostly only applicable to small data sets.\\
-\par In Collaborative Filtering, we don't have to create a feature profile for users. Rather, users are defined exactly by their rating vectors. We find other users similar to these users by comparing the distance between rating vectors and then recommend to one user the items that the other user also liked. \\
-\par To compute the distance between users in extremely sparse matrices, we could consider Jaccard distance, which focuses only on sets of items rated. This is a good choice in the situation where we are are inferring user preferences (i.e. have no ratings) based on whether or not a user purchased/read/watched a given item. With non-binary values, we have a few options: we could try cosine distance again, but this treats all unrated objects as unliked objects, which isn't exactly the correct interpretation. Alternatively, we can bucket numeric values into binary "like" and "dislike" based on their ranges. Again, we should also normalize numeric values. \\
-\par Two complications in the lack of symmetry in the utility matrix: 
+
+\newpage
+\section*{Literature Review}
+
+Online systems encapsulate a `long tail' effect \cite{chapter9} where many more products and servies are available than is typically seen in physically constrained retail stores. Thus the need for a recommendation system arises: to quickly and easily allow users to find products that are appealing to them.\\
+\par Due to the text and qualitative nature of a product's content description and metadata, these systems use a TF.IDF \cite{beginners_guide} system to enumerate the occurance of certain key words in comparison to that word's occurance in other documents. Thus quantitative vectors can be constructed from the qualitative nature of these descriptions. Simple Content-Based filtering directly compares any two document vectors (using cosine angle comparisons or techniques such as the Jaccard distance) \cite{chapter9} whereas Collaborative-Filtering makes an assumption based on the similar likes and dislikes of users of the similarities among products. Collaborative-Filtering requires a deeper understanding of the subject matter of the content, as groups are not always explicitly applicable to these data \cite{chapter9}. Two examples of complications that arise in collaborative filtering are:
 \begin{enumerate}
 		\item The process of generating recommendations from similar users does not translate directly into generating recommendations from sets of similar items.
 		\item Users may like multiple genres and have only one of those genres in common with a similar user. We need to avoid recommending the other genre that the second user may not care for.
-\end{enumerate}		
-\par To predict an empty value, (I,U) in the matrix, we can find n users most similar to user U, normalize their ratings for item I, average the difference for the users who have rated I, and add it to the average rating for U. We could also find m items most similar to I and take the average rating that U has given to these items. To generate recommendations, we seek to at least generate most of the entries for a user U that are blank but have a high estimated value. In general, item-item similarity will be more accurate, because of the complication of users who like multiple genres, but this requires more computation. \\
-\par To deal with the complications of the sparse matrix, we often have to cluster users and/or items into small clusters to get enough overlapping ratings. \\
-\par Another way to compute blank values is by performing UV-decomposition on the utility matrix. We initialize U and V and then iterate to find choices of U and V that minimize the RMSE between values of UV and values of the actual utility matrix. Then, we can use entries of UV as a prediction for entries that are blank in the utility matrix. Intuitively, this method works off the assumption that there are only a small (comparatively) number of features that determine the final value in the utility matrix. Note that we again need to perform normalization for user rating scales and item quality before performing this algorithm. Additionally, it is possible to reach local minima in this algorithm, so we must either consider random restarts. To avoid overfitting, we can:
-\begin{enumerate}
-		\item Avoid favoring the first components to be optimized by moving values only partially toward the optimized value, i.e. use a learning rate less than 1.
-		\item Stop the algorithm before the elements of U and V have fully converged
-		\item Take several UV decompositions and average the results of all of them.
-\end{enumerate}	
+\end{enumerate}
+\par For a given utility matrix, which contains feature data (usually including TF.IDF scores) for users or items we wish to predict empty values in that matrix to make the relevant recommendation \cite{chapter9}. To predict an empty value, (I,U) in the matrix, we can find n users most similar to user U, normalize their ratings for item I, average the difference for the users who have rated I, and add it to the average rating for U. We could also find m items most similar to I and take the average rating that U has given to these items. To generate recommendations, we seek to at least generate most of the entries for a user U that are blank but have a high estimated value. In general, item-item similarity will be more accurate, because of the complication of users who like multiple genres, but this requires more computation.\\
+\par \textit{Note to us: possible inclusion of the computation overhead of this all and the need to store all of the given information in a prebuilt matrix before time. User preferences generally don't change over time and thus the need to change (and re-compute) the matrix is not too overwhelming.}\\
+\par We now turn our attention to the specific case study of the Netflix challenge where Netflix offerered a reward of $\$1,000,000$ for any algorithm that could beat the current `CineMatch' algorithm's \textit{root-mean-square-error} (RMSE) by more than 10\% \cite{chapter9}. This challenge was successfully won in 2009. It is noted that the standard set by CineMatch only obtained a marginally (3\%) lower RMSE than the average rating across all users for each movie and the average rating across all movies for each user.\\
+\par The grand prize solution to the Netflix challenge \cite{netflix} consists of multidimensional solution to the problem of recommendation. Techniques ranged from computing baseline ratings for movies (which measures their overall quality, independently from a specific viewer) and users (which measures how critically they tend to rate movies generally, independently from any specific movies).
+\par
+The BellKor team had the insights to make the baselines time-dependent. It is reasonable to expect that a movie's general popularity might change over time (e.g. as it becomes more or less culturally relevant) or that a user's baseline might shift from day to day (e.g. depending on their mood). Thus, they compute baselines for every movie and every user as a function of time, although in practice they don't use continuous functions, but rather a set of discrete estimates for time bins spanning the total time range of the dataset.
 
+% They computed these baseline movie ratings (which they denote $b_i$) and user ratings (which they denote $b_u$) by solving a least squares problem in terms of the average overall rating $\mu$ and each individual rating $r_{ui}$, where they try to find $b_u$ and $b_i$ such that the following quantity is minimized:
 
+% $$
+% \sum_{\text{all ratings}} (r_{ui} - \mu - b_u - b_i)^2 + \lambda\left(\sum_u b_u^2 + \sum_i b_i^2\right)
+% $$
 
-\section*{Literature Review - Paper 2}
+% where $\lambda$ is a regularization parameter for the Ridge-regression-style penalty on large $b_u$ and $b_i$s, and we can think of the squared term as representing the true rating $r_{ui}$ minus its user and movie-specific baseline $b_{ui} \equiv \mu + b_u + b_i$, whose difference should never be 0 (because users do have preferences not explainable by the movie's overall quality and their overall criticality), but which should intuitively be relatively small.
 
-\section*{Literature Review - The BellKor Solution to the Netflix Grand Prize}
+% Once baselines are factored away, we can start predicting better and more consistent estimates of how much a user might actually like a movie.
 
-The grand prize solution to the Netflix challenge is important to consider, because despite its complexity, it serves as a kind of gold standard for recommendation systems. Also, the fact that the solution is a mixture of many models means that studying it will help teach us about a wide variety of models.
-
-There are a few techniques the BellKor team used that were important across models, though.
-
-One technique was computing baseline ratings for movies (which measures their overall quality, independently from a specific viewer) and users (which measures how critically they tend to rate movies generally, independently from any specific movies).
-
-They computed these baseline movie ratings (which they denote $b_i$) and user ratings (which they denote $b_u$) by solving a least squares problem in terms of the average overall rating $\mu$ and each individual rating $r_{ui}$, where they try to find $b_u$ and $b_i$ such that the following quantity is minimized:
-
-$$
-\sum_{\text{all ratings}} (r_{ui} - \mu - b_u - b_i)^2 + \lambda\left(\sum_u b_u^2 + \sum_i b_i^2\right)
-$$
-
-where $\lambda$ is a regularization parameter for the Ridge-regression-style penalty on large $b_u$ and $b_i$s, and we can think of the squared term as representing the true rating $r_{ui}$ minus its user and movie-specific baseline $b_{ui} \equiv \mu + b_u + b_i$, whose difference should never be 0 (because users do have preferences not explainable by the movie's overall quality and their overall criticality), but which should intuitively be relatively small.
-
-Once baselines are factored away, we can start predicting better and more consistent estimates of how much a user might actually like a movie.
-
-The BellKor team actually took this idea of baselines a bit further and made them time-dependent. It's reasonable to expect that a movie's general popularity might change over time (e.g. as it becomes more or less culturally relevant) or that a user's baseline might shift from day to day (e.g. depending on their mood). So they actually compute baselines for every movie and every user as a function of time, although in practice they don't use continuous functions, but rather a set of discrete estimates for time bins spanning the total time range of the dataset.
+% The BellKor team actually took this idea of baselines a bit further and made them time-dependent. It's reasonable to expect that a movie's general popularity might change over time (e.g. as it becomes more or less culturally relevant) or that a user's baseline might shift from day to day (e.g. depending on their mood). So they actually compute baselines for every movie and every user as a function of time, although in practice they don't use continuous functions, but rather a set of discrete estimates for time bins spanning the total time range of the dataset.
 
 The timescale over which these quantities vary is different; we expect movie baselines to shift slowly over months or years and user baselines to shift much more frequently. For movies, they bin their baselines in 10-week intervals. For users, because there isn't enough data to fully establish 1-day bins, they do a more complicated calculation that allows for gradual drift effects over long time periods as well as sudden "spikes" that are computed from day-specific data. This allows them to account for both long and short term changes in user baselines (which they note may even be caused by multiple people using the same user account, which many of us know from experience is a fairly common practice).
 
@@ -116,6 +95,17 @@ Note that although most of this time-specific information is most useful for fil
 So, finally, all of these baseline components are computed again by a (more complex) gradient descent solution to a least-squares problem, with additional $\lambda$ terms to regularize the extra parameters (stil using effectively a Ridge penalty).
 
 After obtaining the baseline factors, they trained a variety of models to predict $r_{ui} - b_{ui}$, i.e. the difference between the true rating and the baseline. Models they used include time-modified versions of matrix factorization, nearest neighbor algorithms, restricted Boltzmann machines, and more. Their prediction for a given rating was a blend (weighted average) of the predictions of each of these models, and the weights of that average were also user and movie-specific. The way they compute the blend weights for each user and movie is complex (and will require reading several more papers to start grasping), but they used gradient boosted decision trees for some of the blend weight calculations.
+
+\begin{thebibliography}{9}
+\bibitem{netflix}
+The BellKor Solution to the Netflix Grand Prize,
+\textit{Yehuda Koren, (2009)}
+\bibitem{beginners_guide}
+Beginners Guide to learn about Content Based Recommender Engines,
+\\\texttt{https://www.analyticsvidhya.com/blog/2015/08/beginners-guide-learn-content-based-recommender-systems/}
+\bibitem{chapter9}
+Chapter 9: Recommendation Systems
+\end{thebibliography}
 
 \end{document}
 
