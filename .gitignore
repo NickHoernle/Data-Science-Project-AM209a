@@ -7,3 +7,5 @@
 yelp_dataset_challenge_academic_dataset.tar
 yelp_dataset_challenge_academic_dataset/
 *.DS_Store
+*.pyc
+*.ipynb_checkpoints*
