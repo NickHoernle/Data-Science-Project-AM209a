@@ -22,4 +22,4 @@ def load_yelp_dataframe(data_type):
         file_url = os.path.join(s3_base_url, filename)
         download(file_url, fullpath)
 
-    return pandas.read_csv(filename)
+    return pandas.read_csv(fullpath)
