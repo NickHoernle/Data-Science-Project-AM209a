@@ -11,19 +11,10 @@ with figure_grid(10, 4) as grid:
   for i, axis in enumerate(grid.each_subplot()):
     # plot something
 """
-
 import matplotlib.pyplot as plt
 
 class figure_grid():
-    def next_subplot(self, **kwargs):
-        self.subplots += 1
-        return self.fig.add_subplot(self.rows, self.cols, self.subplots, **kwargs)
-
-    def each_subplot(self):
-        for _ in range(self.rows * self.cols):
-            yield self.next_subplot()
-
-    def __init__(self, rows, cols, rowheight=4, rowwidth=10):
+    def __init__(self, rows, cols, rowheight=4, rowwidth=16):
         self.rows = rows
         self.cols = cols
         self.fig = plt.figure(figsize=(rowwidth, rowheight*self.rows))
@@ -35,3 +26,14 @@ class figure_grid():
     def __exit__(self, _type, _value, _traceback):
         plt.tight_layout()
         plt.show()
+
+    def next_subplot(self, **kwargs):
+        self.subplots += 1
+        return self.fig.add_subplot(self.rows, self.cols, self.subplots, **kwargs)
+
+    def each_subplot(self):
+        for _ in range(self.rows * self.cols):
+            yield self.next_subplot()
+
+    def title(self, title, fontsize=14):
+        self.fig.suptitle(title, y=1.05, fontsize=fontsize)
