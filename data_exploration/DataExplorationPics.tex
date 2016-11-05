@@ -53,7 +53,7 @@ We downloaded the data from the `Yelp Dataset Challenge' (\url{https://www.yelp.
 
 \subsection*{Overview Exploration}
 
-\par A simple inspection of the businesses data shows that useful information such as the business categories, latitude and longitude and the average ratings given to a business are all easily available. Similarily, for each user we have information about the number of reviews that they have given, the average rating that they give and the date that they have been `yelping' since.
+\par A simple inspection of the businesses data shows that useful information such as the business categories, latitude and longitude, and the average ratings given to a business are all easily available. Similarly, for each user we have information about the number of reviews that they have given, the average rating that they give, and the date that they have been `yelping' since.
 
 \begin{figure}[H]
 \centering
@@ -102,7 +102,7 @@ It was interesting to understand the distribution of the numbers of reviews over
 \caption{Number of reviews per day on yelp over time}
 \end{figure}
 
-We see that the number of reviews that are submitted on the Yelp platform over time is increasing dramatically from when Yelp opened in 2004 to present, were approximately 2500 reviews are submitted per day. Analyzing the number of reviews that are submitted over the course of a year shows that June and July are popular months while November and December show a relevantly lower number of reviews. An interesting point for further exploration is if the business type shows different `high' and `low' seasons and if the popularity of a business or a category of businesses can be tracked over time.
+We see that the number of reviews that are submitted on the Yelp platform over time is increasing dramatically from when Yelp opened in 2004 to present, were approximately 2500 reviews are submitted per day. Analyzing the number of reviews that are submitted over the course of a year shows that June and July are popular months while November and December show a relatively lower number of reviews. An interesting point for further exploration is if the business type shows different `high' and `low' seasons and if the popularity of a business or a category of businesses can be tracked over time.
 
 \subsection*{Location based Exploration}
 
@@ -189,7 +189,7 @@ A natural question to ask is whether users who give one review per day actually 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/lotsoffans.png}
-\caption{Difference in stars between users with >50 and <=50 fans}
+\caption{Difference in stars between users with $>$50 and $\leq$50 fans}
 \end{figure}
 
 If we condition on how many fans the user has, we find that that also plays a significant role in how extremely they rate users. However, we also discovered that even for users with more than 50 fans, when we condition on whether \textit{they} were giving one review per day or many, they were also more extreme when giving just one review (although the effect was less strong). This will be important to consider when computing a baseline model for business likeability.
@@ -221,7 +221,7 @@ If we condition on how many fans the user has, we find that that also plays a si
 
 \par Although the average stars here are rounded (a limitation in the summary statistics provided by the dataset), we can see that businesses with lots of high ratings rise to the top and businesses with lots of low ratings sink to the bottom. Also, some of those poorly-rated businesses are now closed, which might be interesting to explore further. How well can we use rating data to predict whether a business closes?
 
-\par We are also interested in determining the effect that location plays in determining ranking. When we locate businesses on top of the actual map, we see that highly-rated businesses tend to locate on highways. This suggests that the accessibility is important to earn positive reviews as well as reviews itself, especially when the businesses are not located in the center of the city.
+\par We are also interested in determining the effect that location plays in determining rating and number of reviews. For example, when we locate most-reviewed Las Vegas businesses on top of the actual map, we see that shopping businesses (in red) tend to locate on highways, whereas the most-reviewed nightlife businesses (in black) for a single walkable cluster. This suggests that accessibility and interaction between similar businesses are important to reviews , especially when the businesses are not located in the center of the city.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/mostreviewsbylocationlv.png}
