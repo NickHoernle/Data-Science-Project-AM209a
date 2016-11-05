@@ -46,13 +46,13 @@
 \maketitle
 
 \section*{Data Source}
-We downloaded the data from the `Yelp Dataset Challenge' (\url{https://www.yelp.com/dataset_challenge}). The data contains in total 2.7M reviews from 687K users for 86K businesses. Business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
+We downloaded the data from the `Yelp Dataset Challenge' (\url{https://www.yelp.com/dataset_challenge}). The data contain in total 2.7M reviews from 687K users for 86K businesses. Business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
 
 \section*{Data Exploration}
 
 \subsection*{Overview Exploration}
 
-\par A simple inspection of the businesses data shows that usful information such as the business categories, latitude and longitude and the average ratings given to a business are all easily available. Similarily, for each user we have information about the number of reviews that they have given, the average rating that they give and the date that they have been `yelping' since.
+\par A simple inspection of the businesses data shows that useful information such as the business categories, latitude and longitude and the average ratings given to a business are all easily available. Similarily, for each user we have information about the number of reviews that they have given, the average rating that they give and the date that they have been `yelping' since.
 
 \begin{figure}[H]
 \centering
@@ -129,7 +129,7 @@ For the locations part of this study we will therefore narrow the focus to Las V
 
 \par For Phoenix the various categories were extracted from the data and the top business categories (by count) are shown below:
 \begin{itemize}
-	\item `Restaurants', 9428)
+	\item `Restaurants', 9428
 	\item `Shopping', 5424
 	\item `Food', 3637
 	\item `Beauty \& Spas', 3603
@@ -156,6 +156,7 @@ We next explored the top rated businesses by introducing a prior model to the ra
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/businessespctrating.png}
 \caption{Chart showing the top biased businesses}
+
 \end{figure}
 
 Examples from the highest and lowest ranked businesses:
@@ -191,43 +192,49 @@ Examples from the highest and lowest ranked businesses:
 
 
 
-
+\par When reviewers have many fans (mroe than 50), they tend to be conservative and give less extrem stars, compared with reviewers who have less fans.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/lotsoffans.png}
+\caption{Reviewers who have fans}
 \end{figure}
 
+
+\par When we locate businesses on top of the actual map, we see that highly-rated businesses tend to locate on highways. This suggests that the accessibility is important to earn positive reviews as well as reviews itself, especially when the businesses are not located in the center of the city.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/mostreviewsbylocationlv.png}
+\caption{Geographic location of top-rated businesses}
 \end{figure}
 
 
+\par In earlier years (i.e., before 2007), the prevalence of each star fluctuated mainly because there were less reviews in Yelp. More recently, there are more 5 stars and less 4 stars, and the prevalence of 1 star is slightly increasing overtime.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/prevalenceofratingsovertime.png}
+\caption{Prevalence of ratings over time}
 \end{figure}
 
+
+
+\par When users reviewed only one business in a day, they were more likely to give 1 stars, compared to users who reviewed more than one business in a day. This suggests that some negative feeling toward a business motivated users to rate the business. In contrast, users who reviewed more than one business in a day, tended to give higher stars.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/numstarsreviewsperday.png}
+\caption{Star distribution when users rated only one business in a given day}
 \end{figure}
 
+
+
+\subsection*{Network Analysis}
+\par We conducted a network analysis to see the topology and relationship among businesses based on user-rated 'stars'. When the star-ranking is positively correlated between two businesses, they are connected with a red edge in the business network. When the star-ranking is negatively correlated between two businesses, they are connected with a blue edge. We used Spearman's ranked correlation analysis to calculate correlation coefficients.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{./ac209/networkanalysis.png}
+\caption{Business correlation network based on user-rated stars in Phoenix.}
 \end{figure}
+\par This preliminary analysis only included 100 businesses (to clearly see the network structure) located in Phoenix. The node in the network figure indicates a business ID, and an edge represents a connection between businesses. The above figure shows that some businesses are highly connected with others, and there are businesses not connected (i.e., businesses were not rated by users). In the next step, we will further focus on a highly-rated businesses and specific type of businesses (e.g., restaurant).
 
-
-\par Now, we plotted average numbers of stars by the number of reviews of users according to the number of reviews in a business. Figures show a modest trend of having higher stars when a business was reviewed by many people. However, we don't see clear relationship among the number of reviews given by a user (or to a business) and the average rating that the business has (or user gives). We can further corroborate this result by analysing the standard deviation in the reviews that a business receives (and a user gives).
-
-\par Using a prior that assumes businesses will not be enjoyed (we wish to overcompensate for the average high ratings of users), we are able to build a more comprehensive likelyhood and thus filter the review somewhat into a more confident top and bottom grouping. The ratings alone are unreliable and we rather wish to include the number of times a business has been rated in a particular manner to calculate the likelihood that this is a favorable (or not) business). For example, if a business is rated poorly twice, this is an unreliable statistic and we do not wish to penalise the business from a median likelihood too dramatically. On the contrary, if a business is rated poorly 100 times, we are confident that users rate the business poorly and we wish to have a low likelihood for enjoyment. In the figure, we show a distribution that corresponds to a probability that this is a good business (i.e., users will like it). On the low end of the scale we have a small number of very poor businesses. We note that these businesses will have a large number of poor ratings. Similarly, on the high end, we see that there is a relatively small number of highly rated businesses. These businesses require a high number of very positive ratings to be rated into this category. We note that we used a fairly aggressive prior assumption that all businesses have a median probability for being liked that is less than 2.5. This is to overcompensate for the generally high ratings. We now have a more normally distributed dataset.
-
-
-
-\par In earlier years (i.e., before 2008), the average stars varied very widely from 1 to 5 stars. In contrast, after 2009 onward, the average stars converged to around 4. This is mainly because we have more reviews over time and the mean value became less variable. The rating did not differ according to the month reviewed.
-
-\par When we analyzed the number of repeated reviews by a user, we found that majority of reviews reviewed once.
 
 \end{document}
 
