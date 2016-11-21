@@ -31,20 +31,21 @@ def filter(dataframe, filter_attributes = {'categories':['Restaurants', 'Fast Fo
     for category in filter_attributes:
         if category not in dataframe.columns:
             raise ValueError('Incorrect column names')
-    if and_or_flag == 'AND':
-        selections = pd.Series(index=dataframe.index, data=1, dtype=np.int8)
+        
+        selections = pd.Series(index=dataframe.index, data=1, dtype=np.int8) if and_or_flag == 'AND' else pd.Series(index=dataframe.index, data=0, dtype=np.int8)
         for category in filter_attributes:
             attributes = filter_attributes[category]
             if not type(attributes) == list:
                 attributes = [attributes]
             selection = pd.Series(index=dataframe.index, data=dataframe.apply( __handle_filter, axis=1 ), dtype=np.int8)
-            selections = np.bitwise_and(selections, selection)
+            if and_or_flag == 'AND':
+                selections = np.bitwise_and(selections, selection)
+            elif and_or_flag == 'OR':
+                 selections = np.bitwise_or(selections, selection)
+            else:
+                ValueError('Incorrect and/or flag supplied. Please use "AND" and "OR"')
         return dataframe.iloc[selection[selections == 1].index]
-            
-    elif and_or_flag == 'OR':
-        return 'Here'
-    raise ValueError('Incorrect and/or flag supplied. Please use "AND" and "OR"')
-    
+
 class simple_averaging:
     '''
     Most basic implementation of the yelp prediction of reiew score. The aim is to simply average 
