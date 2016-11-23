@@ -23,7 +23,7 @@ def load_yelp_dataframe(data_type):
         file_url = os.path.join(s3_base_url, filename)
         download(file_url, fullpath)
 
-    return pandas.read_csv(fullpath)
+    return pandas.read_csv(fullpath).drop('Unnamed: 0', 1)
 
 def create_standard_train_and_test(
             dataframes,
