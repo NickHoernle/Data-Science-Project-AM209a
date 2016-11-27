@@ -50,6 +50,18 @@ def filter_to_location(location, biz, rev, usr):
     lusr = usr[usr.user_id.isin(lrev.user_id.values)]
     return lbiz, lrev, lusr
 
+def filter_to_categories(categories, biz, rev, usr):
+    catfilter = lambda b: any(c in b.categories for c in categories)
+    cbiz = biz[biz.apply(catfilter, axis=1)]
+    crev = rev[rev.business_id.isin(cbiz.business_id.values)]
+    cusr = usr[usr.user_id.isin(crev.user_id.values)]
+    return cbiz, crev, cusr
+
+def restaurants_and_bars_in(location, biz, rev, usr):
+    return filter_to_categories(
+            ['Restaurants', 'Bars', 'Nightlife'],
+            *filter_to_location(location, biz, rev, usr))
+
 def train_test_split_reviews(rev, seed=1000, train_size=0.7):
     n,m = rev.shape
     rev_trn = rev.sample(n=int(train_size*n), replace=False, random_state=seed)
