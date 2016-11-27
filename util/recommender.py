@@ -1,4 +1,5 @@
 import numpy as np
+import sklearn.metrics as mets
 
 class Recommender():
     def fit(self, X, y):
@@ -8,11 +9,10 @@ class Recommender():
         raise NotImplementedError("must implement predict(self, X)")
 
     def r2_score(self, X, y):
-        preds = self.predict(X)
-        y_avg = np.mean(y)
-        tss = ((y - y_avg)**2).sum()
-        sse = ((y - preds)**2).sum()
-        return 1 - sse/tss
+        return mets.r2_score(y, self.predict(X))
+
+    def rmse(self, X, y):
+        return np.sqrt(mets.mean_squared_error(y, self.predict(X)))
 
     def score(self, X, y):
-        return self.r2_score(X, y)
+        return self.rmse(X, y)
