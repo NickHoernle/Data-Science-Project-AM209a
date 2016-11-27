@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage,amsmath,amsfonts,mathpazo,microtype,nicefrac,graphicx,verbatimbox,listings,hyperref,enumitem,amssymb,float,fancyhdr}
+
+% Margins
+% \topmargin=-0.45in
+% \evensidemargin=0in
+% \oddsidemargin=0in
+% \textwidth=6.5in
+% \textheight=9.0in
+% \headsep=0.25in
+
+% \linespread{1.1} % Line spacing
+
+% % Set up the header and footer
+% \pagestyle{fancy}
+% \lhead{\hmwkAuthorName} % Top left header
+% \chead{\hmwkClass\ (\hmwkClassInstructor\ \hmwkClassTime): \hmwkTitle} % Top center header
+% \rhead{\firstxmark} % Top right header
+% \lfoot{\lastxmark} % Bottom left footer
+% \cfoot{} % Bottom center footer
+% \rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+% \renewcommand\headrulewidth{0.4pt} % Size of the header rule
+% \renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+% \setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%   TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{1cm}
+\textmd{\textbf{AC209a Milestone 5: Data Science with User Ratings and Reviews}}\\
+% \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+% \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+}
+
+\author{\textbf{Andrew Ross, Sophie Hilgard, Reiko Nishihara, Nick Hoernle}}
+\date{\today} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\section*{Proposal of Future Work}
+\paragraph{} 	For Baseline Models in Milestone 4, we have implemented simple averaging as well as basic content-based recommendations and collaborative filtering models. Going forward, we hope to build more sophisticated models within these classes. In particular, we will explore creating a hybrid collaborative filtering/matrix factorization model or a model which more heavily weights recent ratings.
+\paragraph{}	We also built a network-based recommendation system based roughly on the PageRank algorithm. This model finds the most `connected` business, where path lengths between businesses are weighted inversely to how much a user liked both of the restaurants. To find the next recommendation for any given user, we search the graph built off of similar users and return the `closest` business the user has not yet been to.
+\paragraph{}	We have also explored a number of other models for predicting business success rather than focusing only on recommendation systems. In particular, we have spent time focusing on other aspects within the yelp challenge that ask you to predict business success based on location or investigate seasonal and otherwise temporal trends in business popularity. Location based models have focused largely on clustering methods, as neighborhood is a better predictor than absolute latitude and longitude values. Trend analysis will use regression models over time to analyze if businesses are cyclically  popular at any given lag or to find points in time when a given business was comparatively `hot` within its lifetime.
+	
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
