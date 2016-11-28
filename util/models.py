@@ -17,7 +17,7 @@ def filter_data(dataframe, filter_attributes = {'categories':['Restaurants', 'Fa
         a = [elem.lower() for elem in a]
         b = [elem.lower() for elem in b]
         return list(set(a) & set(b))
-    def __handle_filter(request):
+    def __handle_filter(request, and_or = 'AND'):
         input_string = ''
         try:
             input_string = ast.literal_eval(str(request[category]))
@@ -25,6 +25,8 @@ def filter_data(dataframe, filter_attributes = {'categories':['Restaurants', 'Fa
             input_string = ast.literal_eval('"'+str(request[category])+'"')
         if not type(input_string) == list:
             input_string = [input_string]
+        if and_or == 'AND':
+            return len(__intersect(input_string, attributes)) == len(attributes)
         return len(__intersect(input_string, attributes)) > 0
 
     # check that the dataframe has the columns specified
