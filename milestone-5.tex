@@ -64,41 +64,41 @@
 
 \paragraph{} In many ways, time is much more of a factor for Yelpers seeking food or drinks than it is for Netflix users picking their next show. Although public opinion about a show or movie sometimes changes over time, the actual quality of a restaurant's food can change much more rapidly. This can make past restaurant rating data less reliable for predicting future ratings. We're interested in seeing if we can reduce RMSE by weighting recent ratings more heavily when computing baselines, or perhaps trying to detect anomalies. To evaluate performance, however, we may have to test our performance only against recent ratings in our test set.
 
-\paragraph{} Another factor we noticed was that time of day and day of week had a strong correlation with ratings for certain types of businesses. This was especially true for bars and "Nightlife" businesses (shown below), and location also came into play. The plot below shows the ratings that are above the mean in red and the ratings that are below the mean in blue. The average number of ratings per day of the week is shown in the right side vertical axis and the number of ratings on any one day of the year is shown in the axis above the plot. We clearly see that the reviews that are given on Sundays and Mondays tends to be more positive than the reviews given on the other days of the week.
+\paragraph{} Another factor we noticed was that day of week had a strong correlation with ratings for certain types of businesses. This was especially true for bars and `Nightlife' businesses (shown below), and location also came into play. The plot below shows the ratings that are above the mean in red and the ratings that are below the mean in blue. The average number of ratings per day of the week is shown in the right side vertical axis and the number of ratings on any one day of the year is shown in the axis above the plot. We clearly see that the reviews that are given on Sundays and Mondays tend to be more positive than the reviews given on the other days of the week.
 
 %(shown in figure \ref{fg:bars_nightlife}) 
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics[keepaspectratio=true,scale=0.4]{./images/bars_nightlife_popularity}
-%\caption{Plot ratings above and below the mean for days of the week vs days in a year for resturants of categories bar and nightlife in Phoenix}\label{fg:bars_nightlife}
-%\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[keepaspectratio=true,scale=0.4]{./images/bars_nightlife_popularity}
+\caption{Plot ratings above and below the mean for days of the week vs days in a year for resturants of categories bar and nightlife in Phoenix}\label{fg:bars_nightlife}
+\end{figure}
 
-%A similar analysis can be applied to various sub locations within the greater Phoenix area. Figure \ref{fg:locations} shows the locations of businesses that are tagged to three cities within the Phoenix area. We can compare the reviews that these locations are receiving over time, as shown in Figures \ref{fg:chandler}, \ref{fg:glendale} and \ref{fg:tempe}.
-%\begin{figure}[H]
-%\centering
-%\includegraphics[keepaspectratio=true,scale=0.4]{./images/sub_location_plot}
-%\caption{Plot of location of reviews tagged to three cities in Phoenix}\label{fg:locations}
-%\end{figure}
+A similar analysis can be applied to various sub locations within the greater Phoenix area. Figure \ref{fg:locations} shows the locations of businesses that are tagged to three cities within the Phoenix area. We can compare the reviews that these locations are receiving over time, as shown in Figures \ref{fg:chandler}, \ref{fg:glendale} and \ref{fg:tempe}.
+\begin{figure}[H]
+\centering
+\includegraphics[keepaspectratio=true,scale=0.4]{./images/sub_location_plot}
+\caption{Plot of location of reviews tagged to three cities in Phoenix}\label{fg:locations}
+\end{figure}
 
-%For these different locations we see that to a greater or lesser extent, Sunday reviews receive the highest scores. We also see (focusing on the right hand line plot) that Chandler and Tempe receive roughly 5 and 10 reviews per day more than Glendale. The plot also uses the opacity of the dot to indicate numbers of reviews and there appears to be a trend that in the winter months (days of the year 200 through to 50), the Glendale area is particularly quiet (especially when comparing this to the other cities). Finally, we notice that Glendale appears to be a satellite city within Phoenix could be a possible reason for this.
-%\begin{figure}[H]
-%\centering
-%\includegraphics[keepaspectratio=true,scale=0.4]{./images/chandler_restaurants}
-%\caption{Plot of reviews above and below the mean for Restaurants in Chandler}\label{fg:chandler}
-%\end{figure}
+For these different locations we see that to a greater or lesser extent, Sunday reviews receive the highest scores. We also see (focusing on the right hand line plot) that Chandler and Tempe receive roughly 5 and 10 reviews per day more than Glendale. The plot also uses the opacity of the dot to indicate numbers of reviews and there appears to be a trend that in the winter months (days of the year 200 through to 50), the Glendale area is particularly quiet (especially when comparing this to the other cities). Finally, we notice that Glendale appears to be a satellite city within Phoenix could be a possible reason for this.
+\begin{figure}[H]
+\centering
+\includegraphics[keepaspectratio=true,scale=0.4]{./images/chandler_restaurants}
+\caption{Plot of reviews above and below the mean for Restaurants in Chandler}\label{fg:chandler}
+\end{figure}
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics[keepaspectratio=true,scale=0.4]{./images/glendale_restaurants}
-%\caption{Plot of reviews above and below the mean for Restaurants in Glendale}\label{fg:glendale}
-%\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[keepaspectratio=true,scale=0.4]{./images/glendale_restaurants}
+\caption{Plot of reviews above and below the mean for Restaurants in Glendale}\label{fg:glendale}
+\end{figure}
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics[keepaspectratio=true,scale=0.4]{./images/tempe_restaurants}
-%\caption{Plot of reviews above and below the mean for Restaurants in Tempe}\label{fg:tempe}
-%\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[keepaspectratio=true,scale=0.4]{./images/tempe_restaurants}
+\caption{Plot of reviews above and below the mean for Restaurants in Tempe}\label{fg:tempe}
+\end{figure}
 
 \paragraph{} Weekly or seasonal effects were not something discussed at all in \cite{koren}, perhaps because they aren't as meaningful for movies (It's a Wonderful Life and Bad Santa aside), but we're interested in seeing if we can use them to improve our predictions for restaurants and bars a bit further.
 
