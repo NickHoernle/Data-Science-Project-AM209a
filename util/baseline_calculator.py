@@ -13,8 +13,9 @@ class BaselineCalculator():
         raise NotImplementedError("implement me")
 
     def baseline_rmse(self, reviews): # assumes you've already fit
+        stars = self.inverse_transform(reviews, np.zeros(len(reviews)))
         return np.sqrt(sklearn.metrics.mean_squared_error(
-            self.transform(reviews).starz, np.zeros(len(reviews))))
+            reviews.stars, stars))
 
     def transform(self, reviews, key='starz'):
         reviews[key] = [
