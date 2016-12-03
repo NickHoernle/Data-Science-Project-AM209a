@@ -18,10 +18,20 @@ class BaselineCalculator():
 
     def transform(self, reviews, key='starz'):
         reviews[key] = [
-            max(1, min(5,
-                s - self.global_mean - self.user_baselines[u] - self.busi_baselines[b]))
+            s - self.global_mean - self.user_baselines[u] - self.busi_baselines[b]
             for s, u, b in reviews[['stars', 'user_id', 'business_id']].values]
         return reviews
+
+    def inverse_transform(self, reviews, predictions):
+        return np.array([
+            max(1, min(5,
+            p + self.global_mean + self.user_baselines[u] + self.busi_baselines[b]))
+            for p, (u, b) in zip(predictions, reviews[['user_id', 'business_id']].values)
+        ])
+
+    def fit_transform(self, reviews, key='starz'):
+        self.fit(reviews)
+        return self.transform(reviews, key=key)
 
 class AbsoluteMeanBaselineCalculator(BaselineCalculator):
     def fit(self, reviews):
