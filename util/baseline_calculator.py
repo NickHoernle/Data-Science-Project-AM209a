@@ -95,3 +95,43 @@ class BetaPriorBaselineCalculator(BaselineCalculator):
             self.user_baselines[usr] = beta_stars(beta_a + u_succs[usr], beta_b + u_fails[usr]) - mu
         for biz in b:
             self.busi_baselines[biz] = beta_stars(beta_a + b_succs[biz], beta_b + b_fails[biz]) - mu
+
+class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
+    def fit(self, reviews, l2_pen=10, tol=1, maxiters=1000, learn_rate=0.00001, verbose=True):
+        user_ids = reviews.user_id.unique()
+        busi_ids = reviews.business_id.unique()
+        self.global_mean = reviews.stars.values.mean()
+        normed_stars = reviews.stars.values - self.global_mean
+
+        busi_indexes = {}
+        user_indexes = {}
+        n_users = len(user_ids)
+        n_busis = len(busi_ids)
+        for i, u in enumerate(user_ids): user_indexes[u] = i
+        for i, b in enumerate(busi_ids): busi_indexes[b] = i
+        uids = np.array([user_indexes[u] for u in reviews.user_id.values])
+        bids = np.array([busi_indexes[b] for b in reviews.business_id.values])
+        busi_indexes = None
+        user_indexes = None
+        coids = [np.argwhere(reviews.user_id.values == usr) for usr in user_ids] + \
+                [np.argwhere(reviews.business_id.values == biz) for biz in busi_ids]
+
+        iters = 0
+        coefs = np.zeros(n_users + n_busis)
+        prev_loss = float('inf')
+
+        while True:
+            error = (normed_stars - coefs[:n_users][uids] - coefs[n_users:][bids])
+            loss = np.sum(error**2) + l2_pen*np.sum(coefs**2)
+            grad = 2*l2_pen*coefs - 2*np.array([np.sum(error[coid]) for coid in coids])
+            coefs -= learn_rate * grad
+            if verbose and iters % 10 == 0: print(loss)
+            if iters > maxiters: break
+            if abs(loss - prev_loss) < tol: break
+            prev_loss = loss
+            iters += 1
+
+        for i, u in enumerate(user_ids):
+            self.user_baselines[u] = coefs[:n_users][i]
+        for i, b in enumerate(busi_ids):
+            self.busi_baselines[b] = coefs[n_users:][i]
