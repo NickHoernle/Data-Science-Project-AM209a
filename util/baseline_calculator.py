@@ -38,6 +38,7 @@ class AbsoluteMeanBaselineCalculator(BaselineCalculator):
     def fit(self, reviews):
         self.global_mean = np.mean(reviews.stars.values)
 
+# eqn (1) from Netflix paper
 class SimpleAverageBaselineCalculator(BaselineCalculator):
     def fit(self, reviews):
         y = reviews.stars.values
@@ -96,6 +97,29 @@ class BetaPriorBaselineCalculator(BaselineCalculator):
         for biz in b:
             self.busi_baselines[biz] = beta_stars(beta_a + b_succs[biz], beta_b + b_fails[biz]) - mu
 
+# eqns (2) and (3) from Netflix paper
+class DecoupledRegularizedBaselineCalculator(BaselineCalculator):
+    def fit(self, reviews, busi_reg_strength=2.5, user_reg_strength=5):
+        y = reviews.stars.values
+        u = reviews.user_id.values
+        b = reviews.business_id.values
+        mu = np.mean(y)
+        self.global_mean = mu
+        yu = defaultdict(list)
+        yb = defaultdict(list)
+        for i, star in enumerate(y):
+            yb[b[i]].append(star)
+            yu[u[i]].append((star, b[i]))
+        for busi, stars in yb.items():
+            self.busi_baselines[busi] = (
+                sum(star - mu for star in stars) /
+                float(busi_reg_strength + len(stars)))
+        for user, star_biz_pairs in yu.items():
+            self.user_baselines[user] = (
+                sum(star - mu - self.busi_baselines[biz] for star, biz in star_biz_pairs) /
+                float(user_reg_strength + len(star_biz_pairs)))
+
+# eqn (4) from Netflix paper
 class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
     def fit(self, reviews, l2_pen=10, tol=1, maxiters=1000, learn_rate=0.00001, verbose=True):
         user_ids = reviews.user_id.unique()
