@@ -13,22 +13,22 @@ class BaselineCalculator():
         raise NotImplementedError("implement me")
 
     def baseline_rmse(self, reviews): # assumes you've already fit
-        stars = self.inverse_transform(reviews, np.zeros(len(reviews)))
         return np.sqrt(sklearn.metrics.mean_squared_error(
-            reviews.stars, stars))
+            reviews.stars, self.baselines(reviews)))
+
+    def baseline_stars(self, r):
+        return self.global_mean + self.user_baselines[r.user_id] + self.busi_baselines[r.business_id]
+
+    def baselines(self, reviews):
+        return np.array([self.baseline_stars(r) for r in reviews.itertuples()])
 
     def transform(self, reviews, key='starz'):
-        reviews[key] = [
-            s - self.global_mean - self.user_baselines[u] - self.busi_baselines[b]
-            for s, u, b in reviews[['stars', 'user_id', 'business_id']].values]
+        reviews[key] = [r.stars - self.baseline_stars(r) for r in reviews.itertuples()]
         return reviews
 
     def inverse_transform(self, reviews, predictions):
-        return np.array([
-            max(1, min(5,
-            p + self.global_mean + self.user_baselines[u] + self.busi_baselines[b]))
-            for p, (u, b) in zip(predictions, reviews[['user_id', 'business_id']].values)
-        ])
+        return np.array([max(1, min(5, prediction + self.baseline_stars(r)))
+            for prediction, r in zip(predictions, reviews.itertuples())])
 
     def fit_transform(self, reviews, key='starz'):
         self.fit(reviews)
@@ -119,43 +119,70 @@ class DecoupledRegularizedBaselineCalculator(BaselineCalculator):
                 sum(star - mu - self.busi_baselines[biz] for star, biz in star_biz_pairs) /
                 float(user_reg_strength + len(star_biz_pairs)))
 
+
+def gradient_descent_minimize(loss_and_grad_fn, initial_guess, tol=50, maxiters=1000, learning_rate=0.00001, verbose=True):
+    iters = 0
+    state = initial_guess
+    prev_loss = float('inf')
+    prev_prev_loss = float('inf')
+
+    while True:
+        loss, grad = loss_and_grad_fn(state)
+        state -= learning_rate * grad
+        if verbose and iters % 25 == 0: print('loss at iter {}: {}'.format(iters, loss))
+        if iters > maxiters: break
+        if abs(loss - prev_loss) < tol: break
+        if prev_loss < loss:
+            learning_rate *= 0.9
+            state += learning_rate * grad
+            iters += 1
+            continue
+        elif loss/prev_loss > 0.9 and (iters < 25 or (loss-prev_loss > prev_loss-prev_prev_loss)):
+            learning_rate *= 1.1
+        prev_prev_loss = prev_loss
+        prev_loss = loss
+        iters += 1
+
+    return state, loss, iters
+
 # eqn (4) from Netflix paper
 class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
-    def fit(self, reviews, l2_pen=10, tol=1, maxiters=1000, learn_rate=0.00001, verbose=True):
+    def fit(self, reviews, l2_penalty=10, **kwargs):
+        mu = reviews.stars.values.mean()
+        self.global_mean = mu
+
+        # we need to optimize with respect to a 1-D vector of parameters
+        # containing [ user baselines ... business baselines ].
+        # to compute the gradient with respect to these parameters, we need
+        # to do a lot of mapping back and forth between ids and positions.
         user_ids = reviews.user_id.unique()
         busi_ids = reviews.business_id.unique()
-        self.global_mean = reviews.stars.values.mean()
-        normed_stars = reviews.stars.values - self.global_mean
-
-        busi_indexes = {}
-        user_indexes = {}
         n_users = len(user_ids)
         n_busis = len(busi_ids)
-        for i, u in enumerate(user_ids): user_indexes[u] = i
-        for i, b in enumerate(busi_ids): busi_indexes[b] = i
-        uids = np.array([user_indexes[u] for u in reviews.user_id.values])
-        bids = np.array([busi_indexes[b] for b in reviews.business_id.values])
-        busi_indexes = None
-        user_indexes = None
-        coids = [np.argwhere(reviews.user_id.values == usr) for usr in user_ids] + \
-                [np.argwhere(reviews.business_id.values == biz) for biz in busi_ids]
+        busi_ids_to_positions = {}
+        user_ids_to_positions = {}
+        for i, u in enumerate(user_ids): user_ids_to_positions[u] = i
+        for i, b in enumerate(busi_ids): busi_ids_to_positions[b] = i+n_users
+        user_positions = np.array([user_ids_to_positions[u] for u in reviews.user_id.values])
+        busi_positions = np.array([busi_ids_to_positions[b] for b in reviews.business_id.values])
 
-        iters = 0
-        coefs = np.zeros(n_users + n_busis)
-        prev_loss = float('inf')
+        # sparse representation
+        coef_positions = [[] for _ in range(n_users + n_busis)]
+        for i, (u, b) in enumerate(reviews[['user_id', 'business_id']].values):
+            coef_positions[user_ids_to_positions[u]].append(i)
+            coef_positions[busi_ids_to_positions[b]].append(i)
+        for i, ps in enumerate(coef_positions):
+            coef_positions[i] = np.array(ps)
 
-        while True:
-            error = (normed_stars - coefs[:n_users][uids] - coefs[n_users:][bids])
-            loss = np.sum(error**2) + l2_pen*np.sum(coefs**2)
-            grad = 2*l2_pen*coefs - 2*np.array([np.sum(error[coid]) for coid in coids])
-            coefs -= learn_rate * grad
-            if verbose and iters % 10 == 0: print(loss)
-            if iters > maxiters: break
-            if abs(loss - prev_loss) < tol: break
-            prev_loss = loss
-            iters += 1
+        def loss_and_grad(coefs):
+            error = (reviews.stars.values - mu
+                     - coefs[user_positions]
+                     - coefs[busi_positions])
+            loss = (error**2).sum() + l2_penalty*(coefs**2).sum()
+            grad = 2*(l2_penalty*coefs - np.array([error[cps].sum() for cps in coef_positions]))
+            return loss, grad
 
-        for i, u in enumerate(user_ids):
-            self.user_baselines[u] = coefs[:n_users][i]
-        for i, b in enumerate(busi_ids):
-            self.busi_baselines[b] = coefs[n_users:][i]
+        coefs, _loss, _iters = gradient_descent_minimize(loss_and_grad, np.zeros(n_users + n_busis), **kwargs)
+
+        for i, u in enumerate(user_ids): self.user_baselines[u] = coefs[i]
+        for i, b in enumerate(busi_ids): self.busi_baselines[b] = coefs[i+n_users]
