@@ -19,22 +19,20 @@ class MatrixFactorizationRecommender(Recommender):
         self.test_file = '{}_X_test.vwmat'.format(prefix)
         self.pred_file = '{}_y_test.vwout'.format(prefix)
 
-    def fit(self, X, y, force=False):
-        # if we already have a model file, don't necessarily retrain
-        if not force and os.path.isfile(self.model_file):
-            print('Model file already exists, skipping vowpal-wabbit fitting'); return
+    def fit(self, X, y, learning_rate=0.015, l2_penalty=0.001, passes=20):
         # ensure vowpal-wabbit is installed
         if not vowpal_wabbit_installed(): 
             print('vw not installed; run brew install vowpal-wabbit (if on a mac)'); return
         # should just have users and businesses
         assert(X.shape[1] == 2)
         # save the utility matrix for X, y
+        os.system('rm *.vwmodel *.vwcache *.vwmat *.vwout')
         save_vowpal_wabbit_matrix(self.train_file, X, y)
         # fit the model
-        os.system('vw {} -b 18 -q ui --rank 10 --l2 0.001 \
-            --learning_rate 0.015 --passes 20 --decay_learning_rate 0.97 \
+        os.system('vw {} -b 18 -q ui --rank 10 --l2 {} \
+            --learning_rate {} --passes {} --decay_learning_rate 0.97 \
             --power_t 0 -f {} --cache_file {} --quiet'.format(
-              self.train_file, self.model_file, self.cache_file))
+              self.train_file, l2_penalty, learning_rate, passes, self.model_file, self.cache_file))
 
     def predict(self, X):
         if not vowpal_wabbit_installed(): 
