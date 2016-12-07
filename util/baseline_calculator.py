@@ -145,6 +145,31 @@ def gradient_descent_minimize(loss_and_grad_fn, initial_guess, tol=50, maxiters=
 
     return state, loss, iters
 
+class GradientDescentLinearRegressor():
+    def predict(self, reviews):
+        reviews['_intercept_mult'] = 1
+        return np.dot(reviews[self.X_columns].values, self.coefs)
+
+    def rmse(self, reviews):
+        return sklearn.metrics.mean_squared_error(reviews[self.y_column].values, self.predict(reviews))
+
+    def fit(self, reviews, X_columns, y_column, l2_penalty=10, l1_penalty=10, **kwargs):
+        reviews['_intercept_mult'] = 1
+        X_columns = ['_intercept_mult'] + list(X_columns)
+        X = reviews[X_columns].values
+        y = reviews[y_column].values
+        self.X_columns = X_columns
+        self.y_column = y_column
+
+        def loss_and_grad(coefs):
+            error = y - np.dot(X, coefs)
+            nonzero = np.multiply(coefs, np.abs(coefs)>1e-9) # hack for making L1 work with floating point
+            loss = np.sum(error**2) + l2_penalty*np.sum(coefs**2) + l1_penalty*np.sum(nonzero)
+            grad = 2*l2_penalty*coefs + l1_penalty*np.sign(nonzero) - 2*np.dot(error, X)/float(X.shape[0])
+            return loss, grad
+
+        self.coefs, _loss, _iters = gradient_descent_minimize(loss_and_grad, np.zeros(len(X_columns)), **kwargs)
+
 # eqn (4) from Netflix paper
 class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
     def fit(self, reviews, l2_penalty=10, **kwargs):
