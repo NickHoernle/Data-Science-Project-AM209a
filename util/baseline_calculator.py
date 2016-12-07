@@ -211,3 +211,68 @@ class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
 
         for i, u in enumerate(user_ids): self.user_baselines[u] = coefs[i]
         for i, b in enumerate(busi_ids): self.busi_baselines[b] = coefs[i+n_users]
+
+class BusinessTimeBaselineCalculator(BaselineCalculator): # it is decidedly not business time
+    def augment(self, reviews):
+        raise NotImplementedError("implement me to set biztime")
+
+    def baseline_stars(self, r):
+        return self.global_mean + self.user_baselines[r.user_id] + self.busi_baselines[r.business_id] + self.biztime_baselines[r.biztime]
+
+    def baselines(self, reviews):
+        self.augment(reviews)
+        return np.array([self.baseline_stars(r) for r in reviews.itertuples()])
+
+    def fit(self, reviews, l2_penalty=10, **kwargs):
+        mu = reviews.stars.values.mean()
+        self.global_mean = mu
+        self.biztime_baselines = defaultdict(int)
+        self.augment(reviews)
+
+        user_ids = reviews.user_id.unique()
+        busi_ids = reviews.business_id.unique()
+        biztimes = reviews.biztime.unique()
+        n_users = len(user_ids)
+        n_busis = len(busi_ids)
+        n_biztimes = len(biztimes)
+        busi_ids_to_positions = {}
+        user_ids_to_positions = {}
+        biztimes_to_positions = {}
+        for i, u in enumerate(user_ids): user_ids_to_positions[u] = i
+        for i, b in enumerate(busi_ids): busi_ids_to_positions[b] = i+n_users
+        for i, t in enumerate(biztimes): biztimes_to_positions[t] = i+n_users+n_busis
+        user_positions = np.array([user_ids_to_positions[u] for u in reviews.user_id.values])
+        busi_positions = np.array([busi_ids_to_positions[b] for b in reviews.business_id.values])
+        biztime_positions = np.array([biztimes_to_positions[t] for t in reviews.biztime.values])
+
+        # sparse representation
+        coef_positions = [[] for _ in range(n_users + n_busis + n_biztimes)]
+        for i, (u, b, y) in enumerate(reviews[['user_id', 'business_id', 'biztime']].values):
+            coef_positions[user_ids_to_positions[u]].append(i)
+            coef_positions[busi_ids_to_positions[b]].append(i)
+            coef_positions[biztimes_to_positions[y]].append(i)
+        for i, ps in enumerate(coef_positions):
+            coef_positions[i] = np.array(ps)
+
+        def loss_and_grad(coefs):
+            error = (reviews.stars.values - mu
+                     - coefs[user_positions]
+                     - coefs[busi_positions]
+                     - coefs[biztime_positions])
+            loss = (error**2).sum() + l2_penalty*(coefs**2).sum()
+            grad = 2*(l2_penalty*coefs - np.array([error[cps].sum() for cps in coef_positions]))
+            return loss, grad
+
+        coefs, _loss, _iters = gradient_descent_minimize(loss_and_grad, np.zeros(len(coef_positions)), **kwargs)
+
+        for i, u in enumerate(user_ids): self.user_baselines[u] = coefs[i]
+        for i, b in enumerate(busi_ids): self.busi_baselines[b] = coefs[i+n_users]
+        for i, t in enumerate(biztimes): self.biztime_baselines[t] = coefs[i+n_users+n_busis]
+
+class BusinessYearBaselineCalculator(BusinessTimeBaselineCalculator):
+    def augment(self, reviews):
+        reviews['biztime'] = [round(float('{}.{}'.format(b, y)), 4) for b, y in reviews[['business_id', 'year']].values]
+
+class Business6MonthBaselineCalculator(BusinessTimeBaselineCalculator):
+    def augment(self, reviews):
+        reviews['biztime'] = [round(float('{}.{}{}'.format(b, y, int(m<=6))), 5) for b, y, m in reviews[['business_id', 'year', 'month']].values]
