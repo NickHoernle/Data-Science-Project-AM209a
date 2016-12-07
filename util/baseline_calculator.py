@@ -151,7 +151,7 @@ class GradientDescentLinearRegressor():
         return np.dot(reviews[self.X_columns].values, self.coefs)
 
     def rmse(self, reviews):
-        return sklearn.metrics.mean_squared_error(reviews[self.y_column].values, self.predict(reviews))
+        return np.sqrt(sklearn.metrics.mean_squared_error(reviews[self.y_column].values, self.predict(reviews)))
 
     def fit(self, reviews, X_columns, y_column, l2_penalty=10, l1_penalty=10, **kwargs):
         reviews['_intercept_mult'] = 1
