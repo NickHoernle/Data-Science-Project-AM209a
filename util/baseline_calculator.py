@@ -223,7 +223,7 @@ class BusinessTimeBaselineCalculator(BaselineCalculator): # it is decidedly not 
         self.augment(reviews)
         return np.array([self.baseline_stars(r) for r in reviews.itertuples()])
 
-    def fit(self, reviews, l2_penalty=10, **kwargs):
+    def fit(self, reviews, l2_penalty=10, bt_l2_penalty=10, **kwargs):
         mu = reviews.stars.values.mean()
         self.global_mean = mu
         self.biztime_baselines = defaultdict(int)
@@ -259,8 +259,8 @@ class BusinessTimeBaselineCalculator(BaselineCalculator): # it is decidedly not 
                      - coefs[user_positions]
                      - coefs[busi_positions]
                      - coefs[biztime_positions])
-            loss = (error**2).sum() + l2_penalty*(coefs**2).sum()
-            grad = 2*(l2_penalty*coefs - np.array([error[cps].sum() for cps in coef_positions]))
+            loss = (error**2).sum() + l2_penalty*(coefs[:n_users+n_busis]**2).sum() + bt_l2_penalty*(coefs[n_users+n_busis:]**2).sum()
+            grad = 2*np.concatenate((l2_penalty*coefs[:n_users+n_busis], bt_l2_penalty*coefs[n_users+n_busis:])) - np.array([error[cps].sum() for cps in coef_positions]))
             return loss, grad
 
         coefs, _loss, _iters = gradient_descent_minimize(loss_and_grad, np.zeros(len(coef_positions)), **kwargs)
@@ -276,3 +276,23 @@ class BusinessYearBaselineCalculator(BusinessTimeBaselineCalculator):
 class Business6MonthBaselineCalculator(BusinessTimeBaselineCalculator):
     def augment(self, reviews):
         reviews['biztime'] = [round(float('{}.{}{}'.format(b, y, int(m<=6))), 5) for b, y, m in reviews[['business_id', 'year', 'month']].values]
+
+class FreqYearBaselineCalculator(BusinessTimeBaselineCalculator):
+    def augment(self, reviews):
+        if 'date' not in reviews.columns:
+            reviews['date']=pd.to_datetime(reviews.year*10000+reviews.month*100+reviews.day, format='%Y%m%d')
+            reviews['weekday'] = [date.weekday() for date in reviews['date']]
+
+        if 'frequency' not in reviews.columns:
+            ratings_by_user_and_date = defaultdict(lambda: defaultdict(list))
+            for row in reviews[['user_id', 'date', 'stars']].itertuples():
+                index, user_id, date, stars = row
+                ratings_by_user_and_date[user_id][date].append(stars)
+            reviews['n_given_same_day'] = [
+                len(ratings_by_user_and_date[user_id][date])
+                for user_id, date in reviews[['user_id','date']].values
+            ]
+            reviews['frequency'] = [int(round(np.log(n))) for n in reviews.n_given_same_day.values]
+
+        reviews['biztime'] = [round(float('{}.{}'.format(b, y)), 1) for b, y in reviews[['frequency', 'weekday']].values]
+
