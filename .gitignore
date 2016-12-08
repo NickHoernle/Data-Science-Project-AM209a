@@ -13,3 +13,4 @@ yelp_dataset_challenge_academic_dataset/
 *.vwcache
 *.vwmat
 *.vwout
+*.env
