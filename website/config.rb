@@ -82,6 +82,23 @@ configure :build do
   # set :http_prefix, "/Content/images/"
 end
 
+helpers do
+  def references
+    {
+      'yelp' => "<a href='https://www.yelp.com/dataset_challenge' target='_blank'>The Yelp Dataset Challenge</a>. Accessed 2016.",
+      'koren' => "Adrian Koren, <a href='http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf' target='_blank'>The BellKor Solution to the Netflix Grand Prize</a>. 2009."
+    }
+  end
+
+  def render_references
+    return "<ul>#{references.map{|k,v| "<li id='ref-#{k}'>#{v}</li>"}.join("\n")}</ul>".html_safe
+  end
+
+  def cite(ref)
+    return "[<a href='#ref-#{ref}'>#{references.keys.index(ref)+1}</a>]".html_safe
+  end
+end
+
 Dotenv.load
 
 if ENV.key?('S3_BUCKET')
