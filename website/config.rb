@@ -64,6 +64,8 @@ sprockets.import_asset 'bootstrap/fonts/glyphicons-halflings-regular.woff2' do |
   "#{fonts_dir}/glyphicons-halflings-regular.woff2"
 end
 
+ignore 'example-without-middleman.html'
+
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment
