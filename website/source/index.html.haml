@@ -1,25 +1,35 @@
+.header
+  / =image_tag('header_bg.jpg')
+  %section#header.background
+    %h1.heading_text Analyzing Yelp Reviews in Phoenix
+  %hr
 .col-md-9
-  %h1 Analyzing Phoenix Yelp reviews
   %section#intro
     %h2 Introduction
-    %p For our take on Data Science with User Ratings and Reviews, we decided to try working with data from the "Yelp Dataset Challenge" #{cite 'yelp'}. Our goal was to explore interesting trends in the dataset, as well as to try out techniques for training recommender systems as outlined in #{cite 'koren'}.
+    = partial 'introduction'
     .temporary-spacer
-
+    %hr
   %section#data-exp
     %h2 Data Exploration
+    = partial 'dataexploration'
+
     .temporary-spacer
+    %hr
 
     %section#data-exp-time-based
       %h3 Exploring Time
       .temporary-spacer
+      %hr
 
     %section#data-exp-loc-based
       %h3 Exploring Space
       .temporary-spacer
+      %hr
 
   %section#networks
     %h2 Network Analysis
     .temporary-spacer
+    %hr
 
   %section#baselines
     -# This is a partial -- use them instead of adding
@@ -29,20 +39,23 @@
   %section#matrices
     %h2 Matrix Factorization
     .temporary-spacer
+    %hr
 
   %section#linear
     %h2 Interpretable Linear Models
     .temporary-spacer
+    %hr
 
   %section#conclusion
     %h2 Conclusion
     .temporary-spacer
+    %hr
 
   %section#refs
     %h2 References
-    = render_references 
+    = render_references
     .temporary-spacer
-      
+    %hr
 
 .col-md-3.sidebar.scrollspy
   %ul.nav{'data-spy': 'affix'}
