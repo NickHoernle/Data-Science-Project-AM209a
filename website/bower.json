@@ -1,0 +1,12 @@
+{
+  "name": "ac209a-final-project",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "source/bower_components"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5"
+  }
+}

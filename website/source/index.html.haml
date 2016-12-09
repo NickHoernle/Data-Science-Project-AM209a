@@ -1,0 +1,107 @@
+.col-md-9
+  %h1 Analyzing Phoenix Yelp reviews
+  %section#intro
+    %h2 Introduction
+    %p For our take on Data Science with User Ratings and Reviews, we decided to try working with data from the "Yelp Dataset Challenge" #{cite 'yelp'}. Our goal was to explore interesting trends in the dataset, as well as to try out techniques for training recommender systems as outlined in #{cite 'koren'}.
+    .temporary-spacer
+
+  %section#data-exp
+    %h2 Data Exploration
+    .temporary-spacer
+
+    %section#data-exp-time-based
+      %h3 Exploring Time
+      .temporary-spacer
+
+    %section#data-exp-loc-based
+      %h3 Exploring Space
+      .temporary-spacer
+
+  %section#networks
+    %h2 Network Analysis
+    .temporary-spacer
+
+  %section#baselines
+    %h2 Baseline Predictors
+    .temporary-spacer
+
+    %section#baselines-global-avg
+      %h3 Always Predict The Mean
+      .temporary-spacer
+
+    %section#baselines-simple-avg
+      %h3 Simple Averaging
+      .temporary-spacer
+
+    %section#baselines-beta-prior
+      %h3 The Beta Prior Method
+      .temporary-spacer
+
+    %section#baselines-decoupling
+      %h3 Decoupled Regularized Averaging
+      .temporary-spacer
+
+    %section#baselines-leastsq-l2
+      %h3 Least-Squares and the L2 Norm
+      .temporary-spacer
+
+    %section#baselines-time-based
+      %h3 Time-Based Baselines
+      .temporary-spacer
+
+  %section#matrices
+    %h2 Matrix Factorization
+    .temporary-spacer
+
+  %section#linear
+    %h2 Interpretable Linear Models
+    .temporary-spacer
+
+  %section#conclusion
+    %h2 Conclusion
+    .temporary-spacer
+
+  %section#refs
+    %h2 References
+    = render_references 
+    .temporary-spacer
+      
+
+.col-md-3.sidebar.scrollspy
+  %ul.nav{'data-spy': 'affix'}
+    %li
+      %a{href: '#intro'} Introduction
+    %li
+      %a{href: '#data-exp'} Data Exploration
+      %ul.nav
+        %li
+          %a{href: '#data-exp-time-based'} Exploring Time
+        %li
+          %a{href: '#data-exp-loc-based'} Exploring Space
+    %li
+      %a{href: '#networks'} Network Analysis
+    %li
+      %a{href: '#baselines'} Baseline Predictors
+      %ul.nav
+        %li
+          %a{href: '#baselines-global-avg'} Always Predict The Mean
+        %li
+          %a{href: '#baselines-simple-avg'} Simple Averaging
+        %li
+          %a{href: '#baselines-beta-prior'} The Beta Prior Method
+        %li
+          %a{href: '#baselines-decoupling'} Decoupled Regularized Averaging
+        %li
+          %a{href: '#baselines-leastsq-l2'} Least-Squares and the L2 Norm
+        %li
+          %a{href: '#baselines-time-based'} Time-Based Baselines
+    %li
+      %a{href: '#matrices'} Matrix Factorization
+    %li
+      %a{href: '#linear'} Interpretable Linear Models
+    %li
+      %a{href: '#conclusion'} Conclusion
+    %li
+      %a{href: '#refs'} References
+
+
