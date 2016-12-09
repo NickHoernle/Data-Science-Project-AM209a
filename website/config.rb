@@ -86,7 +86,7 @@ helpers do
   def references
     {
       'yelp' => "<a href='https://www.yelp.com/dataset_challenge' target='_blank'>The Yelp Dataset Challenge</a>. Accessed 2016.",
-      'koren' => "Adrian Koren, <a href='http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf' target='_blank'>The BellKor Solution to the Netflix Grand Prize</a>. 2009."
+      'koren' => "Yehuda Koren, <a href='http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf' target='_blank'>The BellKor Solution to the Netflix Grand Prize</a>. 2009."
     }
   end
 
