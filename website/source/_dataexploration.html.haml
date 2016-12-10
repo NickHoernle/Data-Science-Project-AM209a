@@ -30,6 +30,7 @@ The data contain in total 2,700,000 reviews from 687,000 users for 86,000 busine
 %li
 	%strong How varied are the ratings?
 	=image_tag('user_rating_distribution.png')
+	=image_tag ('images/skewed_data_log.png')
 	Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of **X** of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals and what works for one person might not work for another. The key learning here is that since user's tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business mean may be a poor predictor for individual user's ratings due to the variation in these ratings.
 
 %p
@@ -38,7 +39,3 @@ The data contain in total 2,700,000 reviews from 687,000 users for 86,000 busine
 	=image_tag('score_with_prior_assumption.png')
 	Having decided to explore the culinary experience in Phoenix, we wanted to understand the scope for the best and worst ratings. The problem here is that a restaurant that receives few reviews may have a disproportionately unrepresentative sample. Therefore, considering raw business rating is unreliable. Similarly, considering only the number of reviews is unintuitive as a business with many low scores cannot be considered a 'good' restaurant. The solution here is to consider both the number of reviews and the scores that those reviews receive. We make an initial assumption that a restaurant will receive a mean review and a small number of reviews will not change the score from this mean. Using this 'likelihood' technique with our assumption (prior for the more technical readers) results in the majority of restaurants being scored around the mean but this model has identified a number of bad and a number of good restaurants. A small example of these is given in the table below:
 	%p **example of good/bad restaurants**
-
-
-
-

@@ -17,12 +17,16 @@
     %hr
 
     %section#data-exp-time-based
-      %h3 Exploring Time
-      .temporary-spacer
-      %hr
+    %h2 Time Exploration
+    = partial 'timeexploration'
+
+    .temporary-spacer
+    %hr
 
     %section#data-exp-loc-based
       %h3 Exploring Space
+      = partial 'locexploration'
+
       .temporary-spacer
       %hr
 
@@ -38,6 +42,8 @@
 
   %section#matrices
     %h2 Matrix Factorization
+    = partial 'matrixfactorization'
+
     .temporary-spacer
     %hr
 
@@ -48,6 +54,8 @@
 
   %section#conclusion
     %h2 Conclusion
+    = partial 'conclusion'
+    
     .temporary-spacer
     %hr
 
@@ -93,5 +101,3 @@
       %a{href: '#conclusion'} Conclusion
     %li
       %a{href: '#refs'} References
-
-
