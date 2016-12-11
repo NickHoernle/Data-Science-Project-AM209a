@@ -25,5 +25,13 @@ $$b_* = \frac{\sum_*(r_* - \mu)}{|R(*)|}$$
 \\
 
 $$b_* \sim 4 \cdot \textrm{Beta} \left( a + \alpha \sum_* \frac{r_{*}-1}{4}  + \alpha \sum_* \frac{5 - r_{*}}{4} \right)$$
-
+\\
+\\
+$$b_i = \frac{\sum_u (r_{ui} - \mu)}{\lambda_1 + |R(i)|}, b_u = \frac{\sum_i (r_{ui} -b_i - \mu)}{\lambda_2 + |R(u)|}$$
+\\
+\\
+$$\textrm{min}_{b_*} = \left[ \sum_{u,i} (r_{ui} - \mu - b_u - b_i) + \lambda_3 \left( \sum_u b_u^2 + \sum_i b_i^2 \right) \right]$$
+\\
+\\
+$$b_i(t) = b_i + b_{i, \textrm{Bin}(t)} $$
 \end{document}  

@@ -23,14 +23,17 @@ As a prerequisite to generating personalized recommendations, we first investiga
 %section#baselines-decoupling
   %h3 Decoupled Regularized Averaging
   This is the primary baseline method used in the BellKor Netflix Prize solution. In this method, we first calculate the value of the baseline for a given restaurant by computing the regularized average of the deviation from mean rating for that restaurant. Then when computing similar regularized baseline values for each user we additionally subtract out the baselines we have already calculated for each restaurant in addition to the mean across all ratings. This decoupling process allows us to more accurately model specific user-restaurant interaction.
+  =image_tag ('images/decoupledregularized.png')
   .temporary-spacer
 
 %section#baselines-leastsq-l2
   %h3 Least-Squares and the L2 Norm
   Similar to the above but perhaps even more accurate, we can solve a least squares equation wherein we seek to minimize the sum over all ratings of [rating(user, restaurant) - mean over all ratings - the baselines for the user and rating in question] while using a regularization term to push the values of the baselines toward zero.
+  =image_tag ('images/leastsquaresregularized.png')
   .temporary-spacer
 
 %section#baselines-time-based
   %h3 Time-Based Baselines
   In the final Netflix paper, BellKor create time-dependent baselines wherein they bin ratings based on recency and then assign bin-specific terms for each item (in their case, movies; in ours, restaurants). Intuitively, this makes sense, as restaurants and movies tend to come in and out of fashion. However, we believe that the effect is much less pronounced for restaurants than it is for items on Netflix, which are almost certainly heavily featured when they are first added and are typically only consumed a single time. In the case of the Yelp data, we were unable to improve the baseline significantly from the original Decoupled Regularized Averaging, even after adding terms related to days of the week and reviews given in the same day, which we had observed elsewhere in our data exploration were significant factors in skewing ratings.
+  =image_tag ('images/timebins.png')
   .temporary-spacer
