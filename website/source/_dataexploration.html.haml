@@ -16,11 +16,15 @@ and
 The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. Business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
 
 /image to show the highly left skewed counts.
-=image_tag ('images/skewed_data_log.png')
+
 %ul
 %li
 	%strong How is the data distributed?
-	=image_tag('count_or_reviews.png')
+	<div>
+	<a href="https://plot.ly/~ashilgard/25/" target="_blank" title="Log Distribution of Reviews per User and Reviews per Business" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/25.png" alt="Log Distribution of Reviews per User and Reviews per Business" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+	<script data-plotly="ashilgard:25"  src="https://plot.ly/embed.js" async></script>
+	</div>
+	=image_tag ('images/skewed_data_log.png')
 
 	This data is highly left skewed. This means that a large number of users have rated a small number of businesses, and similarly, the majority of businesses have received a comparatively small number of reviews. The implications of this observation for us is that using a particular user's review history to predict that user's rating for any one particular business is likely to be unfruitful (the small user history will prevail for the majority of cases). We run this analysis in (**LINK**) and we see that including a history of user reviews does not improve the prediction drastically. We later implement a 'Collaborative Filtering' approach which is able to combine this intuition by comparing what we do know about a user's history but also using information about how popular a restaurant tends to be.
 	%p
