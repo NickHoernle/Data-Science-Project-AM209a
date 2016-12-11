@@ -5,16 +5,19 @@ As a prerequisite to generating personalized recommendations, we first investiga
 %section#baselines-global-avg
   %h3 Always Predict The Mean
   The most simple baseline is to just predict the mean rating across all users and all businesses in the training set for each rating in the test set. This results in an RMSE of 1.354.
+  =image_tag ('images/justmean.png')
   .temporary-spacer
 
 %section#baselines-simple-avg
   %h3 Simple Averaging
   In this method, we simply compute the baseline for each restaurant or user to be its average deviation from the mean rating.
+  =image_tag ('images/simpleaveraging.png')
   .temporary-spacer
 
 %section#baselines-beta-prior
   %h3 The Beta Prior Method
   In the Beta prior method, the baseline for each restaurant or user is given according to a beta distribution where the two parameters can be roughly interpreted as "upvotes" and "downvotes". That is, high ratings given by a user or to a business will add to the magnitude of the first parameter, and low ratings given by a user or to a business will decrease the magnitude of the second parameter.
+  =image_tag ('images/betaprior.png')
   .temporary-spacer
 
 %section#baselines-decoupling
