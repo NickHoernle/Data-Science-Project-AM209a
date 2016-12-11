@@ -16,6 +16,7 @@ and
 The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. Business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
 
 /image to show the highly left skewed counts.
+=image_tag ('images/skewed_data_log.png')
 %ul
 %li
 	%strong How is the data distributed?
@@ -30,7 +31,6 @@ The data contain in total 2,700,000 reviews from 687,000 users for 86,000 busine
 %li
 	%strong How varied are the ratings?
 	=image_tag('user_rating_distribution.png')
-	=image_tag ('images/skewed_data_log.png')
 	Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of **X** of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals and what works for one person might not work for another. The key learning here is that since user's tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business mean may be a poor predictor for individual user's ratings due to the variation in these ratings.
 
 %p

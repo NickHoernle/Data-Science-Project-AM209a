@@ -36,6 +36,14 @@
     margin-left: auto;
 }
 
+.container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .col-md-9{
 	padding-right: 45px;
   padding-left:  45px;
