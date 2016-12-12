@@ -3,6 +3,7 @@
 from collections import defaultdict
 import numpy as np
 import sklearn.metrics
+import pandas as pd
 
 class BaselineCalculator():
     def __init__(self):
@@ -212,45 +213,52 @@ class L2RegLeastSquaresBaselineCalculator(BaselineCalculator):
         for i, u in enumerate(user_ids): self.user_baselines[u] = coefs[i]
         for i, b in enumerate(busi_ids): self.busi_baselines[b] = coefs[i+n_users]
 
-class BusinessTimeBaselineCalculator(BaselineCalculator): # it is decidedly not business time
+class CustomColumnBaselineCalculator(BaselineCalculator):
+    def custom_colname(self):
+        raise NotImplementedError("implement me to return custom column name")
+
     def augment(self, reviews):
-        raise NotImplementedError("implement me to set biztime")
+        raise NotImplementedError("implement me to set custom column")
 
     def baseline_stars(self, r):
-        return self.global_mean + self.user_baselines[r.user_id] + self.busi_baselines[r.business_id] + self.biztime_baselines[r.biztime]
+        return (self.global_mean +
+            self.user_baselines[r.user_id] +
+            self.busi_baselines[r.business_id] +
+            self.cust_baselines[getattr(r, self.custom_colname())])
 
     def baselines(self, reviews):
         self.augment(reviews)
         return np.array([self.baseline_stars(r) for r in reviews.itertuples()])
 
-    def fit(self, reviews, l2_penalty=10, bt_l2_penalty=10, **kwargs):
+    def fit(self, reviews, l2_penalty=10, **kwargs):
+        colname = self.custom_colname()
         mu = reviews.stars.values.mean()
         self.global_mean = mu
-        self.biztime_baselines = defaultdict(int)
+        self.cust_baselines = defaultdict(int)
         self.augment(reviews)
 
         user_ids = reviews.user_id.unique()
         busi_ids = reviews.business_id.unique()
-        biztimes = reviews.biztime.unique()
+        custvals = reviews[colname].unique()
         n_users = len(user_ids)
         n_busis = len(busi_ids)
-        n_biztimes = len(biztimes)
+        n_custs = len(custvals)
         busi_ids_to_positions = {}
         user_ids_to_positions = {}
-        biztimes_to_positions = {}
+        custvals_to_positions = {}
         for i, u in enumerate(user_ids): user_ids_to_positions[u] = i
         for i, b in enumerate(busi_ids): busi_ids_to_positions[b] = i+n_users
-        for i, t in enumerate(biztimes): biztimes_to_positions[t] = i+n_users+n_busis
+        for i, t in enumerate(custvals): custvals_to_positions[t] = i+n_users+n_busis
         user_positions = np.array([user_ids_to_positions[u] for u in reviews.user_id.values])
         busi_positions = np.array([busi_ids_to_positions[b] for b in reviews.business_id.values])
-        biztime_positions = np.array([biztimes_to_positions[t] for t in reviews.biztime.values])
+        cust_positions = np.array([custvals_to_positions[t] for t in reviews[colname].values])
 
         # sparse representation
-        coef_positions = [[] for _ in range(n_users + n_busis + n_biztimes)]
-        for i, (u, b, y) in enumerate(reviews[['user_id', 'business_id', 'biztime']].values):
+        coef_positions = [[] for _ in range(n_users + n_busis + n_custs)]
+        for i, (u, b, c) in enumerate(reviews[['user_id', 'business_id', colname]].values):
             coef_positions[user_ids_to_positions[u]].append(i)
             coef_positions[busi_ids_to_positions[b]].append(i)
-            coef_positions[biztimes_to_positions[y]].append(i)
+            coef_positions[custvals_to_positions[c]].append(i)
         for i, ps in enumerate(coef_positions):
             coef_positions[i] = np.array(ps)
 
@@ -258,41 +266,72 @@ class BusinessTimeBaselineCalculator(BaselineCalculator): # it is decidedly not 
             error = (reviews.stars.values - mu
                      - coefs[user_positions]
                      - coefs[busi_positions]
-                     - coefs[biztime_positions])
-            loss = (error**2).sum() + l2_penalty*(coefs[:n_users+n_busis]**2).sum() + bt_l2_penalty*(coefs[n_users+n_busis:]**2).sum()
-            grad = 2*np.concatenate((l2_penalty*coefs[:n_users+n_busis], bt_l2_penalty*coefs[n_users+n_busis:])) - np.array([error[cps].sum() for cps in coef_positions]))
+                     - coefs[cust_positions])
+            loss = (error**2).sum() + l2_penalty*(coefs**2).sum()
+            grad = 2*(l2_penalty*coefs - np.array([error[cps].sum() for cps in coef_positions]))
             return loss, grad
 
         coefs, _loss, _iters = gradient_descent_minimize(loss_and_grad, np.zeros(len(coef_positions)), **kwargs)
 
         for i, u in enumerate(user_ids): self.user_baselines[u] = coefs[i]
         for i, b in enumerate(busi_ids): self.busi_baselines[b] = coefs[i+n_users]
-        for i, t in enumerate(biztimes): self.biztime_baselines[t] = coefs[i+n_users+n_busis]
+        for i, t in enumerate(custvals): self.cust_baselines[t] = coefs[i+n_users+n_busis]
 
-class BusinessYearBaselineCalculator(BusinessTimeBaselineCalculator):
+class BusinessYearBaselineCalculator(CustomColumnBaselineCalculator):
+    def custom_colname(self):
+        return 'business_year'
+
     def augment(self, reviews):
-        reviews['biztime'] = [round(float('{}.{}'.format(b, y)), 4) for b, y in reviews[['business_id', 'year']].values]
+        reviews['business_year'] = [round(float('{}.{}'.format(b, y)), 4)
+            for b, y in reviews[['business_id', 'year']].values]
 
-class Business6MonthBaselineCalculator(BusinessTimeBaselineCalculator):
+class Business6MonthBaselineCalculator(CustomColumnBaselineCalculator):
+    def custom_colname(self):
+        return 'business_time'
+
     def augment(self, reviews):
-        reviews['biztime'] = [round(float('{}.{}{}'.format(b, y, int(m<=6))), 5) for b, y, m in reviews[['business_id', 'year', 'month']].values]
+        reviews['business_time'] = [round(float('{}.{}{}'.format(b, y, int(m<=6))), 5)
+            for b, y, m in reviews[['business_id', 'year', 'month']].values]
 
-class FreqYearBaselineCalculator(BusinessTimeBaselineCalculator):
+def time_augment_reviews(reviews):
+    if 'date' not in reviews.columns:
+        reviews['date']=pd.to_datetime(reviews.year*10000+reviews.month*100+reviews.day, format='%Y%m%d')
+    if 'weekday' not in reviews.columns:
+        reviews['weekday'] = [date.weekday() for date in reviews['date']]
+    if 'frequency' not in reviews.columns:
+        ratings_by_user_and_date = defaultdict(lambda: defaultdict(list))
+        for row in reviews[['user_id', 'date', 'stars']].itertuples():
+            index, user_id, date, stars = row
+            ratings_by_user_and_date[user_id][date].append(stars)
+        reviews['n_given_same_day'] = [
+            len(ratings_by_user_and_date[user_id][date])
+            for user_id, date in reviews[['user_id','date']].values
+        ]
+        reviews['frequency'] = [int(round(np.log(n))) for n in reviews.n_given_same_day.values]
+
+class FreqYearBaselineCalculator(CustomColumnBaselineCalculator):
+    def custom_colname(self):
+        return 'freqyear'
+
     def augment(self, reviews):
-        if 'date' not in reviews.columns:
-            reviews['date']=pd.to_datetime(reviews.year*10000+reviews.month*100+reviews.day, format='%Y%m%d')
-            reviews['weekday'] = [date.weekday() for date in reviews['date']]
+        time_augment_reviews(reviews)
+        reviews['freqyear'] = [round(float('{}.{}'.format(b, y)), 1)
+            for b, y in reviews[['frequency', 'year']].values]
 
-        if 'frequency' not in reviews.columns:
-            ratings_by_user_and_date = defaultdict(lambda: defaultdict(list))
-            for row in reviews[['user_id', 'date', 'stars']].itertuples():
-                index, user_id, date, stars = row
-                ratings_by_user_and_date[user_id][date].append(stars)
-            reviews['n_given_same_day'] = [
-                len(ratings_by_user_and_date[user_id][date])
-                for user_id, date in reviews[['user_id','date']].values
-            ]
-            reviews['frequency'] = [int(round(np.log(n))) for n in reviews.n_given_same_day.values]
+class MoreThanOneReviewBizBaselineCalculator(CustomColumnBaselineCalculator):
+    def custom_colname(self):
+        return 'bizfreq_gt_1'
 
-        reviews['biztime'] = [round(float('{}.{}'.format(b, y)), 1) for b, y in reviews[['frequency', 'weekday']].values]
+    def augment(self, reviews):
+        time_augment_reviews(reviews)
+        reviews['bizfreq_gt_1'] = [round(float('{}.{}'.format(b, int(n > 0))), 1)
+            for b, n in reviews[['business_id', 'n_given_same_day']].values]
 
+class MoreThanOneReviewUserBaselineCalculator(CustomColumnBaselineCalculator):
+    def custom_colname(self):
+        return 'usrfreq_gt_1'
+
+    def augment(self, reviews):
+        time_augment_reviews(reviews)
+        reviews['usrfreq_gt_1'] = [round(float('{}.{}'.format(u, int(n > 0))), 1)
+            for u, n in reviews[['user_id', 'n_given_same_day']].values]

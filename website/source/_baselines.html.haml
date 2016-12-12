@@ -1,39 +1,99 @@
 %h2 Baseline Predictors
-As a prerequisite to generating personalized recommendations, we first investigate the calculation of baseline predictors. These are predictions for each user and each business that are meant to represent the inherent criticality of the user and quality of the business. The calculation of these predictors should help normalize the data for use in sophisticated algorithms later as well as lead to better predictions for inactive or new users.
-.temporary-spacer
+%p As a prerequisite to generating personalized recommendations, we first investigate the calculation of baseline predictors. These are predictions for each user and each business that are meant to represent the inherent criticality of the user and quality of the business. The calculation of these predictors should help normalize the data for use in more sophisticated algorithms later, as well as lead to better predictions when we lack data about a new user or business.
+
+%p
+  The simplest way of using baselines is
+  $$
+  \\hat{r}_{ui} = \mu + b_u + b_i,
+  $$
+  where \(\hat{r}_{ui}\) is our rating prediction, \(\mu\) is the global mean rating, and \(b_u\) and \(b_i\) are our user and business (or <em>item</em>) baselines, all of which we learn from our training data. Defined in this way, we can use them as a standalone prediction model, although in practice #{cite 'koren'} other models are trained on their residuals, or baselines values are determined alongside other parameters in a more complex model trained via an optimization technique.
+
+%p
+  We'll outline a few of the methods from #{cite 'koren'} that we replicated, along with their (baseline) RMSEs on the our Phoenix test set. You can see code for all of them <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py'>here</a>.
 
 %section#baselines-global-avg
   %h3 Always Predict The Mean
-  The most simple baseline is to just predict the mean rating across all users and all businesses in the training set for each rating in the test set. This results in an RMSE of 1.354.
-  =image_tag ('images/justmean.png')
-  .temporary-spacer
+  %p
+    The most simple baseline is to just predict the mean rating across all users and all businesses in the training set for each rating in the test set:
+    $$
+    b_u = b_i = 0
+    $$
+    This results in an RMSE of <strong>1.354</strong>.
 
 %section#baselines-simple-avg
   %h3 Simple Averaging
-  In this method, we simply compute the baseline for each restaurant or user to be its average deviation from the mean rating.
-  =image_tag ('images/simpleaveraging.png')
-  .temporary-spacer
+  %p
+    In this method, we simply compute the baseline for each restaurant or user to be its average deviation from the mean rating
+    $$
+    b_* = \frac{\sum_{r_* \in R(*)} (r_* - \mu)}{|R(*)|},
+    $$
+    where we adopt the convention that \(*\) can refer to either \(u\) or \(i\), \(R(*)\) indicates the set of reviews in our training set given by \(u\) or to \(i\), and \(r_{ui}\) or \(r_*\) is a particular review in our training set. We may further abbreviate \(\sum_{r_* \in R(*)}\) as just \(\sum_*\). With those notation notes out of the way, the RMSE of this method was <strong>1.347</strong>.
 
 %section#baselines-beta-prior
   %h3 The Beta Prior Method
-  In the Beta prior method, the baseline for each restaurant or user is given according to a beta distribution where the two parameters can be roughly interpreted as "upvotes" and "downvotes". That is, high ratings given by a user or to a business will add to the magnitude of the first parameter, and low ratings given by a user or to a business will decrease the magnitude of the second parameter.
-  =image_tag ('images/betaprior.png')
-  .temporary-spacer
+  %p
+    This is a method we created, inspired by the homework assignment on movie recommendations. In this method, the baseline for each restaurant or user is defined to be the mode of a Beta posterior distribution, where the two parameters are set based on the "upvotes" and "downvotes" in the training data plus a prior, centered at \(\mu\), whose strength we parameterized:
+    $$
+    b_* \sim 1 + 4\cdot\text{Beta}\left(a + \sum_*\frac{r_*-1}{4}, \text{ }b + \sum_*\frac{5-r_*}{4}\right) - \mu
+    $$
+    We think of \((r_*-1)/4\), which is 1 for a five-star review and 0 for a one-star review, as an upvote, and \((5-r_*)/4\), which is 0 for a five-star review and 1 for a 0-star review, as a downvote. \(a\) and \(b\) are chosen such that \(a+b\) equals a regularization parameter \(\alpha\) while we require that the Beta mode \(\frac{a-1}{a+b-2}\) equals the global mean \(\mu.\) That gives
+    $$
+    a = \frac{(\mu - 1)(\alpha-2)}{4} + 1, \text{ }b = \alpha-a.
+    $$
+    For the Phoenix set, we found that the optimal value of \(\alpha\) was \(\approx 8\), which gave us an RMSE of <strong>1.229</strong>. You can see the code <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py#L59-L98'>here</a>. <br><br><small>Note that we had a typo on the poster, in case you're cross-referencing this!</small>
 
 %section#baselines-decoupling
   %h3 Decoupled Regularized Averaging
-  This is the primary baseline method used in the BellKor Netflix Prize solution. In this method, we first calculate the value of the baseline for a given restaurant by computing the regularized average of the deviation from mean rating for that restaurant. Then when computing similar regularized baseline values for each user we additionally subtract out the baselines we have already calculated for each restaurant in addition to the mean across all ratings. This decoupling process allows us to more accurately model specific user-restaurant interaction.
-  =image_tag ('images/decoupledregularized.png')
-  .temporary-spacer
+  %p
+    The first method outlined by #{cite 'koren'} is the following modification of simple averaging. First, we calculate the value of the baseline for a given restaurant by computing the regularized average deviation from the mean for that restaurant. Then when computing similar regularized baseline values for each user we additionally subtract out the baselines we have already calculated for each restaurant in addition to the mean across all ratings. This decoupling process allows us to more accurately model specific user-restaurant interaction:
+    $$
+    b_i = \frac{\sum_u (r_{ui} - \mu)}{\lambda_1 + |R(i)|}, b_u = \frac{\sum_i (r_{ui} - b_i - \mu)}{\lambda_2 + |R(u)|}
+    $$
+    For the optimal values we determined for \(\lambda_1\) and \(\lambda_2\) (which were 5.25 and 2.75), we obtained an RMSE of <strong>1.2247</strong>.
 
 %section#baselines-leastsq-l2
   %h3 Least-Squares and the L2 Norm
-  Similar to the above but perhaps even more accurate, we can solve a least squares equation wherein we seek to minimize the sum over all ratings of [rating(user, restaurant) - mean over all ratings - the baselines for the user and rating in question] while using a regularization term to push the values of the baselines toward zero.
-  =image_tag ('images/leastsquaresregularized.png')
-  .temporary-spacer
+  %p
+    The second method outlined by #{cite 'koren'}, which was also used in #{cite 'koren2'} and many other analyses, is a posed as a least-squares problem, where we seek to minimize the sum over all ratings of [rating(user, restaurant) - mean over all ratings - the baselines for the user and rating in question] while using an L2 regularization penalty to push the values of the baselines toward zero:
+    $$
+    b_* = \text{argmin}\left[ \sum_{u,i} (r_{ui} - \mu - b_u - b_i)^2 + \lambda_3\left(\sum_u b_u^2 + \sum_i b_i^2\right)\right]
+    $$
+    In #{cite 'koren'}, the parameters were determined via gradient descent, since the gradient is simple to calculate analytically:
+    $$
+    \\frac{\partial \text{ loss function}}{\partial b_*} = 2\lambda_3b_* - \sum_* 2(r_* - \mu - b_u - b_i)
+    $$
+    Because our dataset, even limited to Phoenix, was very large (for this method, we needed to estimate 150,619 parameters), the optimization libraries we tried all ran out of memory, so we <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py#L123-L146'>implemented</a> a simple (and slightly adaptive) version of gradient descent, which we <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py#L173-L213'>used</a> to find the parameters in a memory-efficient manner (with convergence typically occuring within 200 iterations). For our best \(\lambda\) of \(\approx 4.5\), we obtained an RMSE of <strong>1.2251</strong>.
+
+  %p
+    A comparison of the above methods (from the perspective of testing different Beta prior strengths) can be seen here:
+    %br
+    %br
+    =image_tag('images/baseline-comparison.png')
+  %p
+    Note how much simple averaging overfits, and how the Beta method initially reduces to simple averaging, but approaches the performance of the methods from #{cite 'koren'} for the best prior strength values.
 
 %section#baselines-time-based
   %h3 Time-Based Baselines
-  In the final Netflix paper, BellKor create time-dependent baselines wherein they bin ratings based on recency and then assign bin-specific terms for each item (in their case, movies; in ours, restaurants). Intuitively, this makes sense, as restaurants and movies tend to come in and out of fashion. However, we believe that the effect is much less pronounced for restaurants than it is for items on Netflix, which are almost certainly heavily featured when they are first added and are typically only consumed a single time. In the case of the Yelp data, we were unable to improve the baseline significantly from the original Decoupled Regularized Averaging, even after adding terms related to days of the week and reviews given in the same day, which we had observed elsewhere in our data exploration were significant factors in skewing ratings.
-  =image_tag ('images/timebins.png')
-  .temporary-spacer
+  %p
+    Although the above methods were used in various iterations of the BellKor solution, they obtained their best results from using time-varying baselines (which introduce the first real input data into the problem). In section IIIA of #{cite 'koren'}, they provide some strong motivation for using time-varying baselines, much of which also applies to the Yelp dataset. In particular, they note that the baseline popularity of movies tends to vary over time (which makes intuitive sense), so instead of a single item baseline \(b_i\), they define an overall baseline \(b_i\) and time-period specific baselines \(b_{i,\text{Bin}(t)}\) corresponding to a particular binning of the full dataset duration.
+  %p
+    For users, they didn't find the time-binning method as effective (in part because user reviews tend to be more scattered in time), but they did find a different method of modeling gradual drifts in users ratings over time, as well as incorporating corrections for specific days. One of their most interesting findings was that user behavior differed significantly based on how many reviews that user gave in the same session, and incorporating terms specific to the rounded log of that day-specific "frequency" reduced their RMSE significantly.
+  %p
+    These approaches seemed promising to us both intuitively (since, like movies, we expect restaurants to come in and out of fashion over time), and also due to what we discovered in data exploration -- namely, that the prevalence of different ratings had been changing over time, and that there was a significant difference in the behavior of users who rated one business vs. many in a given day.
+
+  %p
+    However, our results weren't quite as good. For the business time binning
+    $$
+    b_* = \text{argmin}\left[ \sum_{u,i} (r_{ui} - \mu - b_u - b_i - b_{i,y})^2 + \lambda\left(\sum_u b_u^2 + \sum_i b_i^2 + \sum_{i,y} b_{i,y}^2 \right)\right]
+    $$
+    where \(y \in \{2008,\cdots,2016\}\) now represents the year of the review, we obtained an RMSE of <strong>1.2258</strong> for \(\lambda=6\).
+  %p
+    When we attempted to incorporate frequency (number of reviews per day) information into the model, we achieved our best performance with the following model:
+    $$
+    b_* = \text{argmin}\left[ \sum_{u,i} (r_{ui} - \mu - b_u - b_i - b_{i,f})^2 + \lambda\left(\sum_u b_u^2 + \sum_i b_i^2 + \sum_{i,f} b_{i,f}^2\right)\right]
+    $$
+    where \(f \in \{0,1\}\) is simply a binary variable indicating whether there were multiple reviews or only one review given, and following #{cite 'koren'} we also apply it to the business rather than the user (which we also tried, but to worse results). For \(\lambda = 4.67\), this method actually gave us our best baseline RMSE of <strong>1.2239</strong>, which suggests that frequency information actually is meaningful.
+  %p
+    However, the reduction in RMSE by including temporal factors is quite small, especially when compared to the dramatic results reported in #{cite 'koren'}. Although the most likely explanation for this disparity is that our methods are much less sophisticated, a few possible data-based reasons are that, to begin with, restaurant reviews may be inherently noisier than movie reviews. A movie is identical every time it is watched, but a restaurant experience is always different, and depends on a huge number of independently moving parts. Additionally, the notable temporal effect we noticed -- that reviews given alone on a day tend to be more extreme -- may not be terribly helpful for reducing RMSE using the above method, because if a unknown rating is more likely to be either a 1 or a 5, and we want to represent that by a constant additive factor, then that factor will be pulled in opposite directions. It would be interesting to explore using it more heavily in a classification model that treated ratings as a categorical variable, rather than a numerical one (which might even be more appropriate for the data, given the qualitatively different reasons why people award different numbers of stars).
+  %p
+    Once again, the code for all of these methods can be found <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py'>here</a>, and you can also view the <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/final_project/Baseline%20Predictors.ipynb'>iPython notebook</a> we used to generate these results.

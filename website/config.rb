@@ -88,7 +88,8 @@ helpers do
   def references
     {
       'yelp' => "<a href='https://www.yelp.com/dataset_challenge' target='_blank'>The Yelp Dataset Challenge</a>. Accessed 2016.",
-      'koren' => "Yehuda Koren, <a href='http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf' target='_blank'>The BellKor Solution to the Netflix Grand Prize</a>. 2009."
+      'koren' => "Yehuda Koren, <a href='http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf' target='_blank'>The BellKor Solution to the Netflix Grand Prize</a>. 2009.",
+      'koren2' => "Yehuda Koren, <a href='http://www.cs.rochester.edu/twiki/pub/Main/HarpSeminar/Factorization_Meets_the_Neighborhood-_a_Multifaceted_Collaborative_Filtering_Model.pdf'>Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model</a>. Proc. 14th ACM SIGKDD Int. Conf. on Knowledge Discovery and Data Mining (KDD'08), pp. 426–434, 2008."
     }
   end
 
