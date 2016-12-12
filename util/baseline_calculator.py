@@ -220,6 +220,11 @@ class CustomColumnBaselineCalculator(BaselineCalculator):
     def augment(self, reviews):
         raise NotImplementedError("implement me to set custom column")
 
+    def transform(self, reviews, key='starz'):
+        self.augment(reviews)
+        reviews[key] = [r.stars - self.baseline_stars(r) for r in reviews.itertuples()]
+        return reviews
+
     def baseline_stars(self, r):
         return (self.global_mean +
             self.user_baselines[r.user_id] +

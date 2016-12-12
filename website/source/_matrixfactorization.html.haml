@@ -1,3 +1,102 @@
-%p Many of the most successful models in the Netflix Challenge were latent factor models. In these models, vectors of factors describing users and items are inferred from the sparse matrix of users and item ratings using a singular value decomposition. We trained and tested these models over a variety of latent variable counts and regularization factors.
+%p
+  Many of the most successful models in the Netflix Challenge were latent factor models, also commonly known as matrix factorization (MF) models by their usual implementation. In these models, vectors of factors describing users and items are inferred from the sparse data we have for their existing ratings, often using matrix factorization techniques such as singular value decomposition. Once we've inferred user vectors \(p_u\) and item vectors \(q_i\), we can then make a prediction using
+  $$
+  \\hat{r}_{ui} = b_{ui} + p_u^\intercal q_i,
+  $$
+  where \(b_{ui}\) is a catch-all term for any baseline factors we may or may not have precalculated.
 
-%p It turned out that our baseline predictors were actually better than three independent implementations of matrix factorization we tried, although when combining baselines with matrix factorization (i.e. using matrix factorization to predict residuals), we were able to do slightly better. When we limited our data to users with multiple reviews, all methods performed better and matrix factorization finally won out (by a hair).
+%p Although we didn't implement any of these models from scratch, we did try three open-source implementations:
+
+%ul
+  %li
+    = link_to "GraphLab Create's", 'https://turi.com/products/create'
+    = link_to 'FactorizationRecommender', 'https://turi.com/products/create/docs/generated/graphlab.recommender.factorization_recommender.FactorizationRecommender.html'
+  %li
+    = link_to "Surprise's", 'http://surpriselib.com/'
+    implementation of
+    = link_to 'SVD++', 'http://surprise.readthedocs.io/en/latest/matrix_factorization.html#surprise.prediction_algorithms.matrix_factorization.SVDpp'
+  %li
+    = link_to "Vowpal Wabbit's", 'https://github.com/JohnLangford/vowpal_wabbit'
+    arguably documented
+    = link_to 'matrix factorization mode', 'https://github.com/JohnLangford/vowpal_wabbit/wiki/Matrix-factorization-example'
+    (for which we wrote a small <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/matrix_factorization_recommender.py'>Python wrapper</a>)
+
+%p First we tried using them without any of our work on baselines. With a little bit of parameter experimentation, we were able to obtain the following RMSEs:
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Model
+      %th RMSE
+      %th L1 Penalty
+      %th L2 Penalty
+  %tbody
+    %tr
+      %td Vowpal Wabbit
+      %td
+        %strong 1.2362
+      %td 0
+      %td 1e-3
+    %tr
+      %td Surprise
+      %td
+        %strong 1.2344
+      %td 0
+      %td 2e-2
+    %tr
+      %td GraphLab Create
+      %td
+        %strong 1.2252
+      %td 1e-5
+      %td 1e-4
+
+%p What's notable is that just using our baseline predictors is sufficient to outperform these models.
+
+%p We then restricted ourselves to just using GraphLab Create's implementation (because in addition to being the most accurate, it was also the fastest to evaluate), and tried to see if including baselines improved performance. We obtained the following results:
+
+%table.table.table-bordered.table-striped
+  %thead
+    %tr
+      %th Baseline Type
+      %th Baseline RMSE
+      %th MF + Baseline RMSE
+      %th MF L1 Penalty
+      %th MF L2 Penalty
+  %tbody
+    %tr
+      %td Decoupled + Regularized
+      %td 1.2247
+      %td
+        %strong 1.2243
+      %td 1e-4
+      %td 2e-3
+    %tr
+      %td Frequency-Aware Least Squares
+      %td 1.2239
+      %td
+        %strong 1.2236
+      %td 2.5e-3
+      %td 1.5e-3
+
+%p
+  In both cases, we were able to obtain better performance by combining baselines with MF models (training the MF models to predict the baseline values), but the reductions in RMSE were extremely small.
+
+%p
+  You can view the iPython notebook with this analysis <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/final_project/Matrix%20Factorization%20Model%20Comparisons.ipynb'>here</a>.
+
+%section#matrices-min-reviews
+  %h3 Limiting User Sparsity
+
+  %p We had been expecting MF models to outperform our baselines more significantly than they did, and we hypothesized that the reason they might not be in this case was that a significant subset of users had only had one review, so many test examples likely had little to no training data for the same user.
+
+  %p To test this in a simple way, we decided to limit our training and test sets to users with multiple reviews. Below is a plot of the distribution of review count and how data size changed at different minimum review cutoffs. Note that we (somewhat inadvertently) limited based on total review count, rather than enforcing that users appearing in the test set had associated training data, so that condition may only be universally true for large \(n\).
+
+  = image_tag('images/user-sparsity.png')
+  %br
+
+  %p We then trained both baseline and MF models at each cutoff, with a tiny bit of MF parameter searching at each cutoff (though not very much, and none for the baseline models). We were curious to see if MF would start to perform signficantly better than the baseline at high cutoffs. Here are our results:
+
+  = image_tag('images/rmse-after-limiting.png')
+  %br
+
+  %p First, it's worth noting that all of the methods improve in accuracy as we limit the dataset size, and simple averaging starts to overfit significantly less (since it starts to have much more data to work with). Second, although MF does start to outperform the baseline (by about 0.003) at the highest cutoff, given the lack of regularization parameter optimization, the result doesn't seem very significant.
