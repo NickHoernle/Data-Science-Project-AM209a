@@ -1,8 +1,12 @@
 /* copied from the bootstrap docs site! */
 
 .sidebar {
-  margin-top: 20px;
+  margin-top: -150px;
   margin-bottom: 20px;
+}
+
+.sidebar .nav.affix-top {
+  margin-top: 150px;
 }
 
 .sidebar .nav > li > a {
