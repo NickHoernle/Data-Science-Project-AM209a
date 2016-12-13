@@ -96,7 +96,7 @@
 
   %p We then trained both baseline and MF models at each cutoff, with a tiny bit of MF parameter searching at each cutoff (though not very much, and none for the baseline models). We were curious to see if MF would start to perform signficantly better than the baseline at high cutoffs. Here are our results:
 
-  = image_tag('images/rmse-after-limiting.png')
+  <iframe width="900" height="800" frameborder="0" scrolling="no" src="https://plot.ly/~ashilgard/62.embed"></iframe>
   %br
 
   %p First, it's worth noting that all of the methods improve in accuracy as we limit the dataset size, and simple averaging starts to overfit significantly less (since it starts to have much more data to work with). Second, although MF does start to outperform the baseline (by about 0.003) at the highest cutoff, given the lack of regularization parameter optimization, the result doesn't seem very significant.
