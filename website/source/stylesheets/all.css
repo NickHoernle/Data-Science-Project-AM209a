@@ -81,6 +81,7 @@
 
 .index{
   background-color: #f2f2f2;
+  font-size:        15px;
 }
 
 .dark_header {
@@ -91,6 +92,26 @@
   padding-bottom:     20px;
   padding-left:       20px;
   color:              black;
+}
+
+.wrapper_col {
+  height:         400px;
+  padding-top:    10px;
+  padding-bottom: 10px;
+}
+
+.left {
+  padding-right:  10px;
+  height:         100%;
+  width:          50%;
+  float:          left;
+}
+
+.right {
+  padding-left:   10px;
+  height:         100%;
+  width:          50%;
+  float:          right;
 }
 
 hr {

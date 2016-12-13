@@ -1,57 +1,45 @@
 %p The Yelp data is highly dimensional, consisting of data and metadata about the Yelp users, the Yelp businesses and the actual reviews that the users entered about the businesses. Our team began work with an overview exploration of the data but as the Data Science process suggests, we returned to this point in an iterative manner as our models developed and the depth of our understanding of these data increased.
 
-/ Is there a better way to do this??
-The topics can be sub-divided into
-%strong general exploration
-,
-%strong location based analysis
-,
-%strong network analysis
-and
-%strong time based analysis.
+.wrapper_col
+	.left
+		/ Is there a better way to do this??
+		%p The topics can be sub-divided into <strong>general exploration</strong>, <strong>location based analysis</strong>, <strong>network analysis</strong> and <strong>time based analysis</strong>.
+		%p After investigating the entire dataset, which spans 10 cities around the globe, we chose to focus our investigation on restaurants and bars in Phoenix, Arizona. While it is true that Yelp users will occasionally travel between cities, the dataset already suffers from many users who have only issued a single review (and will therefore be hard to predict for with any of our methodologies), and so we'd like to limit the scope of our analysis to some subset where there is likely to be a greater overlap between businesses rated by users. Additionally, we limit to restaurants and bars as it's more conceivable that users will share preferences within a single category rather than across categories.
 
-%p After investigating the entire dataset, which spans 10 cities around the globe, we chose to focus our investigation on restaurants and bars in Phoenix, Arizona. While it is true that Yelp users will occasionally travel between cities, the dataset already suffers from many users who have only issued a single review (and will therefore be hard to predict for with any of our methodologies), and so we'd like to limit to some subset where there is likely to be a greater overlap between businesses rated by users. Additionally, we limit to restaurants and bars as it's more conceivable that users will share preferences within a single category rather than across categories.
-
-%strong Restaurants in Phoenix, Arizona Yelp Dataset
-<iframe width="900" height="350" frameborder="0" scrolling="no" src="images/map.html"></iframe>
+	.right
+		%strong Restaurants in Phoenix, Arizona Yelp Dataset
+		<iframe width="900" height="350" frameborder="0" scrolling="no" src="images/map.html"></iframe>
 
 %h4 Baseline Analysis
-The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. Business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
+The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. The business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
 
 /image to show the highly left skewed counts.
 
-%ul
-%li
-	%strong How is the data distributed?
-	<div>
-	<a href="https://plot.ly/~ashilgard/25/" target="_blank" title="Log Distribution of Reviews per User and Reviews per Business" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/25.png" alt="Log Distribution of Reviews per User and Reviews per Business" style="max-width: 100%;width: 600px;height:350px"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-	<script data-plotly="ashilgard:25"  src="https://plot.ly/embed.js" async></script>
-	</div>
-	/ =image_tag ('images/skewed_data_log.png')
+.wrapper_col
+	.left
+		%strong How is the data distributed?
+		%p This data is highly right skewed. This means that a large number of users have rated a small number of businesses, and similarly, the majority of businesses have received a comparatively small number of reviews. The implications of this observation for us is that using a particular user's review history to predict that user's rating for any one particular business is likely to be unfruitful (the small user history will prevail for the majority of cases). We run this analysis in (**LINK**) and we see that including a history of user reviews does not improve the prediction drastically. We later implement a 'Collaborative Filtering' approach which is able to combine this intuition by comparing what we do know about a user's history but also using information about how popular a restaurant tends to be. For more on Collaborative Filtering, please see the Matrix Factorization section below.
+	.right
+		<div><a href="https://plot.ly/~ashilgard/25/" target="_blank" title="Log Distribution of Reviews per User and Reviews per Business" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/25.png" alt="Log Distribution of Reviews per User and Reviews per Business" style="max-width: 100%;width: 600px;height:350px"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a></div>
+		/ <script data-plotly="ashilgard:25"  src="https://plot.ly/embed.js" async></script>
 
-	This data is highly left skewed. This means that a large number of users have rated a small number of businesses, and similarly, the majority of businesses have received a comparatively small number of reviews. The implications of this observation for us is that using a particular user's review history to predict that user's rating for any one particular business is likely to be unfruitful (the small user history will prevail for the majority of cases). We run this analysis in (**LINK**) and we see that including a history of user reviews does not improve the prediction drastically. We later implement a 'Collaborative Filtering' approach which is able to combine this intuition by comparing what we do know about a user's history but also using information about how popular a restaurant tends to be. For more on Collaborative Filtering, please see the Matrix Factorization section below.
-	%p
+.wrapper_col
+	.left
+		<div> <a href="https://plot.ly/~ashilgard/34/" target="_blank" title="Variation in Ratings" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/34.png" alt="Variation in Ratings" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+		<script data-plotly="ashilgard:34"  src="https://plot.ly/embed.js" async></script>
+		</div>
+	.right
+		%strong How varied are the ratings?
+		%p Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of 67% of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews, as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this, we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals  - what works for one person might not work for another. The key learning here is that since users tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business's mean score may be a poor predictor for individual user's ratings due to the variation in these ratings.
 
-%p
+.wrapper_col
+	.left
+		%strong What are the best restaurants in Phoenix?
+		/ =image_tag('score_with_prior_assumption.png')
+		%p Having decided to explore the culinary experience in Phoenix, we wanted to understand the scope for the best and worst ratings. The problem here is that a restaurant that receives few reviews may have a disproportionately unrepresentative sample. Therefore, considering raw business rating is unreliable. Similarly, considering only the number of reviews is unintuitive as a business with many low scores cannot be considered a 'good' restaurant. The solution here is to consider both the number of reviews and the scores that those reviews receive. We make an initial assumption that a restaurant will receive a mean review and a small number of reviews will not change the score from this mean. Using this 'likelihood' technique with our mean score assumption results in the majority of restaurants being scored around the mean, but this model has identified a number of bad and a number of good restaurants. A small example of these is given in the table below:
 
-%li
-	%strong How varied are the ratings?
-	<div>
-	<a href="https://plot.ly/~ashilgard/34/" target="_blank" title="Variation in Ratings" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/34.png" alt="Variation in Ratings" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-	<script data-plotly="ashilgard:34"  src="https://plot.ly/embed.js" async></script>
-	</div>
+	.right
+		<div><a href="https://plot.ly/~ashilgard/46/" target="_blank" title="Variation in Ratings (St. Dev.)" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/46.png" alt="Variation in Ratings (St. Dev.)" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+		/ <script data-plotly="ashilgard:46"  src="https://plot.ly/embed.js" async></script>
+		</div>
 
-	<div>
-	<a href="https://plot.ly/~ashilgard/46/" target="_blank" title="Variation in Ratings (St. Dev.)" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/46.png" alt="Variation in Ratings (St. Dev.)" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-	<script data-plotly="ashilgard:46"  src="https://plot.ly/embed.js" async></script>
-	</div>
-
-
-	Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of 67% of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews, as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this, we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals  - what works for one person might not work for another. The key learning here is that since users tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business mean may be a poor predictor for individual user's ratings due to the variation in these ratings.
-
-%p
-%li
-	%strong What are the best restaurants in Phoenix?
-	=image_tag('score_with_prior_assumption.png')
-	Having decided to explore the culinary experience in Phoenix, we wanted to understand the scope for the best and worst ratings. The problem here is that a restaurant that receives few reviews may have a disproportionately unrepresentative sample. Therefore, considering raw business rating is unreliable. Similarly, considering only the number of reviews is unintuitive as a business with many low scores cannot be considered a 'good' restaurant. The solution here is to consider both the number of reviews and the scores that those reviews receive. We make an initial assumption that a restaurant will receive a mean review and a small number of reviews will not change the score from this mean. Using this 'likelihood' technique with our assumption results in the majority of restaurants being scored around the mean, but this model has identified a number of bad and a number of good restaurants. A small example of these is given in the table below:
-	%p **example of good/bad restaurants**
