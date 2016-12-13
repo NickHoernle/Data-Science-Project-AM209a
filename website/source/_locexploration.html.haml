@@ -1,3 +1,9 @@
+%p
+.container
+=image_tag ('images/open_restaurant_rating_clusters.png')
+
+%p
+
 %p One of the other tasks mentioned in the Netflix Challenge was how dependent a business's success was on just its location. While this was somewhat tangential to the original task of predicting user ratings, we were interested to see what data exploration could reveal and used this to inform whether neighborhood clustering could be a useful predictor in future models.
 
 %p
@@ -8,7 +14,3 @@
 %p Then, to investigate this question, we split the restaurants and bars based on those that were still open and those that were closed and then clustered the restaurants using k-means clustering based on their latitude and longitude. While it's true that most cities have a more formal delineation of neighborhoods than this, it should give us a good estimate. We note also that the Yelp data has a "neighborhood" column but that it tends to be unpopulated.
 
 %p Most notably, we find that among restaurants that are still open, the restaurants outside of the center of the city tend to have a lower star rating. Intuitively, this can be interpreted as suggesting that restaurants that have lower competition tend to stay open despite their lack of relative quality. An even better measure of success might be the time that a restaurant stays open, but this is difficult to determine from the data supplied.
-
-%p
-.container
-=image_tag ('images/open_restaurant_rating_clusters.png')

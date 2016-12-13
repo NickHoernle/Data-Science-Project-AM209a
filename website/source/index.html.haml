@@ -30,6 +30,7 @@
 
   %section#networks
     %h2.dark_header Network Analysis
+    = partial 'network_analysis'
     .temporary-spacer
     %hr
 
@@ -72,6 +73,8 @@
       %li
         %a{href: '#data-exp'} Data Exploration
         %ul.nav
+          %li
+            %a{href: 'data-exp-base-line'} General Baseline Analysis
           %li
             %a{href: '#data-exp-time-based'} Exploring Time
           %li
