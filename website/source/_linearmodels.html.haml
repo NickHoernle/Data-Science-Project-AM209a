@@ -6,3 +6,5 @@
 %p
 
 %p We used the baseline correction to retrain a Lasso regression model. We further split the training dataset to be used to build a history of user's reviews. The problem that was incurred here is that we needed to sacrifice half of the training data to purely use in building this history metric, however, this formed a strong predictor and a resultant RMSE of <strong>1.240</strong> was achieved.
+
+%p Lastly, we used the <a href='#baselines'>baseline predictors</a> and half of the training dataset to compute a reasonable baseline transform. This, we then used to create a new predictor (along with all of the other business and user attributes) on the other half of the training set and on the testing test. Again we ran both a Random Forest and a Lasso Regression on this new enlarged dataset. The scores were not improved and critically, the Lasso Regression returned the best Cross Validated regularization coefficient when all predictors but the baseline were shrunk to 0. This was in a sense a validation that the baseline work was already maximizing the prediction effort and there was little else left for the other predictors to predict on.

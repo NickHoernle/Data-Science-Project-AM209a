@@ -49,8 +49,8 @@
 
 .wrapper_col
   .left
-    %p Highly connected restaurants in the network (i.e. nodes with more edges) are highly reviewed by users who also reviewed the neighboring restaurants. Thus, it can provide information on how users liked both connected restaurants. To know the highly connected restaurants, we calculated <a href='#eigenvector_centrality_explination'><strong>eigenvector centrality</strong></a> in the combined positive and negative network. The eigenvector centrality assigns relative scores to all nodes in the network based on the connectivity of the node and its neighbors. The top 95% highly connected restaurants are shown in the table above.
+    %p Highly connected restaurants in the network (i.e. nodes with more edges) are highly reviewed by users who also reviewed the neighboring restaurants. Thus, it can provide information on how users liked both connected restaurants. To know the highly connected restaurants, we calculated <a href='#eigenvector_centrality_explanation'><strong>eigenvector centrality</strong></a> in the combined positive and negative network. The eigenvector centrality assigns relative scores to all nodes in the network based on the connectivity of the node and its neighbors. The top 95% highly connected restaurants are shown in the table above.
 
-  .right.boxed_explination
-    %h5#eigenvector_centrality_explination <strong>What is Eigenvector Centrality?</strong>
+  .right.boxed_explanation
+    %h5#eigenvector_centrality_explanation <strong>What is Eigenvector Centrality?</strong>
     %p If you consider a random walk over the network, where at any individual restaurant node, you travel to the next restaurant node with probability proportional to the strength of their correlation, then the scores determined by eigenvector centrality will be the relative proportion of time you spend at each restaurant node. This method, made famous for its use in Google's PageRank algorithm, provides an intuitive and computationally tractable way of ranking nodes in general graphs.

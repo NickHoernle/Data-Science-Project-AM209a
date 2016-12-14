@@ -5,6 +5,9 @@
 
 %p
   %h4 Data Trends:
-  The Yelp dataset has much more to offer than just predicting user preferences. We were able to identify a number of interesting trends in the data sets that either confirmed or made us reconsider previously held notions about consumer opinion of restaurant quality. **COOL EXAMPLES HERE**
+  One of the more enjoyable aspects of this project was the data exploration. In particular, we were able to identify a number of interesting trends in the data sets that either confirmed or made us reconsider previously held notions about consumer opinion of restaurant quality. In the future, we would likely pursue these other aspects of the Yelp Data Challenge, like trying to predict the rise and fall of restaurant trends or whether a good or bad location is enough to cause a business to succeed or fail.
+
 
 %p
+  %h4 Managing Large Data Sets:
+  Throughout this project we encountered memory errors and long computation times. Although we found and implemented some workarounds, if we were to continue this work in the future, we would likely switch away from storing our data as in-memory numpy and pandas objects and investigate using databases or remote clusters instead. Sparse matrix datastructures provide a good platform for storing and processing these vast review matrices but the computation taken in compiling these matrices often negated their usefulness down the line.

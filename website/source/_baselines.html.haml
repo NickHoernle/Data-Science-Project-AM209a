@@ -9,12 +9,12 @@
   where \(\hat{r}_{ui}\) is our rating prediction, \(\mu\) is the global mean rating, and \(b_u\) and \(b_i\) are our user and business (or <em>item</em>) baselines, all of which we learn from our training data. Defined in this way, we can use them as a standalone prediction model, although in practice #{cite 'koren'} other models are trained on their residuals, or baselines values are determined alongside other parameters in a more complex model trained via an optimization technique.
 
 / .wrapper_col.clearfix
-.right.boxed_explination
-  %h5#rmse_explination <strong>RMSE - Root Mean Square Error:</strong>
+.right.boxed_explanation
+  %h5#rmse_explanation <strong>RMSE - Root Mean Square Error:</strong>
   %p We will be referring to <i>Root Mean Square Error (RMSE)</i> throughout the rest of this discussion and so it is a good plan to get you comfortable with the concept. This is our standardized metric for comparing different models as it measures the inherent error that is present between the prediction and the truth. For example, if we have a user that gives a restaurant a score of <i>3 stars</i>, but we predict that the user would love the restaurant and would give it a score of <i>5 stars</i> then our model has made a prediction error of <i>2 stars</i>. The root mean square error metric takes all of these miss-predictions, squares them, averages the squared term and square roots the resulting average. You can think of an RMSE of 1.5 as the model (on average) predicting 1.5 stars incorrectly for every user in either direction.
 
 %p
-  We'll outline a few of the methods from #{cite 'koren'} that we replicated, along with their (baseline) <a href='#rmse_explination'>RMSEs</a> on the Phoenix test set. You can see code for the baselines <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py'>here</a>.
+  We'll outline a few of the methods from #{cite 'koren'} that we replicated, along with their (baseline) <a href='#rmse_explanation'>RMSEs</a> on the Phoenix test set. You can see code for the baselines <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/util/baseline_calculator.py'>here</a>.
 
 %section#baselines-global-avg
   %h3 Always Predict The Mean
