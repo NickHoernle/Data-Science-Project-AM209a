@@ -1,68 +1,54 @@
 .header
-  / =image_tag('header_bg.jpg')
   %section#header.background
     %h1.heading_text Analyzing Yelp Reviews in Phoenix
-%hr.header_rule
+
 .col-md-9
   %section#intro
     %h2.dark_header Introduction
     = partial 'introduction'
-    .temporary-spacer
     %hr
 
   %section#data-exp
     %h2.dark_header Data Exploration
     = partial 'dataexploration'
-    .temporary-spacer
     %hr
 
     %section#data-exp-time-based
     %h4 Time Exploration
     = partial 'timeexploration'
-    .temporary-spacer
     %hr
 
     %section#data-exp-loc-based
     %h4 Exploring Space
     = partial 'locexploration'
-    .temporary-spacer
     %hr
 
   %section#networks
     %h2.dark_header Network Analysis
     = partial 'network_analysis'
-    .temporary-spacer
     %hr
 
   %section#baselines
-    -# This is a partial -- use them instead of adding
-    -# to this file!
     = partial 'baselines'
 
   %section#matrices
     %h2.dark_header Matrix Factorization
     = partial 'matrixfactorization'
-
-    .temporary-spacer
     %hr
 
   %section#linear
     %h2.dark_header Interpretable Linear Models
     = partial 'linearmodels'
-    .temporary-spacer
     %hr
 
   %section#conclusion
     %h2.dark_header Conclusion
     = partial 'conclusion'
-
-    .temporary-spacer
     %hr
 
   %section#refs
     %h2.dark_header References
     = render_references
-    .temporary-spacer
     %hr
 
 .col-md-3
@@ -74,7 +60,7 @@
         %a{href: '#data-exp'} Data Exploration
         %ul.nav
           %li
-            %a{href: 'data-exp-base-line'} General Baseline Analysis
+            %a{href: '#data-exp-base-line'} General Baseline Analysis
           %li
             %a{href: '#data-exp-time-based'} Exploring Time
           %li

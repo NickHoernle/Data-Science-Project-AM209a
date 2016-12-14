@@ -1,16 +1,30 @@
-%p One of the most successful methods of the Netflix Prize involved taking into account time-lagged buckets for each user and item to account for changing trendiness of a given item and for changing user preferences over time. We were interested in exploring whether or not these were effects we'd be able to find in the Yelp data, as well.
+%p One of the most successful methods in the BellKor solution to the Netflix challenge involved taking into account various temporal effects present in the data, both over long spans and short intervals. We were interested in exploring whether or not these were effects we'd be able to find in the Yelp data, as well.
 
-%p We additionally explored whether a user's behavior on a given day had an effect on how they rated businesses. There has been some research into doing this on the Netflix data as well, trying to map ratings at specific times into a "mood" setting for the user. In particular, we find that when users give only a single rating on a given day, that rating is more likely to be a 1 or a 5 than it would be otherwise. The intuition behind this seems to be that if a user is only giving a single rating, they are likely opening the Yelp app simply because they had a particularly good or bad experience rather than out of a general dedication to rating every business they encounter.
-
-.wrapper_col
-  .left
-    %p <div>
-    <a href="https://plot.ly/~ashilgard/36/" target="_blank" title="Distribution of Ratings by Ratings per Day" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/36.png" alt="Distribution of Ratings by Ratings per Day" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    / <script data-plotly="ashilgard:36"  src="https://plot.ly/embed.js" async></script>
-    </div>
-
+.wrapper_col.clearfix
   .right
-    %p <div>
-    <a href="https://plot.ly/~ashilgard/48/" target="_blank" title="Only review, 1 Other Review, 2 Other Reviews, 3 Other Reviews, &gt;=4 Other Reviews" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/48.png" alt="Only review, 1 Other Review, 2 Other Reviews, 3 Other Reviews, &gt;=4 Other Reviews" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    / <script data-plotly="ashilgard:48"  src="https://plot.ly/embed.js" async></script>
-    </div>
+    = image_tag('alone-vs-in-groups.png')
+  .left
+    %p One of the major phenomena cited in #{cite 'koren'} was that users who only rate one item on a given day tend to exhibit different behaviors than users rating multiple items. As seen below, we definitely noticed such an effect; users who rate only one item per day tend to be more likely to select 1 or 5. The intuition behind this seems to be that if a user is only giving a single rating, they are likely opening the Yelp app simply because they had a particularly good or bad experience rather than out of a general dedication to rating every business they encounter.
+
+%p We also noticed that there were some long-term trends in the data. In particular, 1s and 5s have been becoming increasingly prevalent in Yelp for a long time, as have users who only give one review at a time:
+
+.wrapper_col.clearfix
+  .right
+    = image_tag('reviews-per-day-prevalence.png')
+  .left
+    = image_tag('rating-prevalence-time.png')
+
+.wrapper_col.clearfix
+  .right
+    = image_tag('one-per-day-2015.png')
+  .left
+    %p It's natural to ask whether the difference in the distribution of ratings between users giving one review per day vs. multiple is causing the change in the distribution of ratings, or vice versa -- perhaps reviews that are given alone on a day are just more likely to be recent, and recent reviews are more extreme overall. However, the effect remains even when conditioning on the year, which suggests that the effect isn't just attributable to recency.
+
+%p Another interesting effect is what happens when you limit to users with fans. Below to the left, we can see that users with fans tend to give more balanced reviews. Interestingly, when we condition on one per day vs. many per day for users with fans, the extremifying effect of giving only one review per day becomes much weaker. That suggests there are richer and more complicated phenomena underlying the differences in why users give different patterns of stars.
+
+.wrapper_col.clearfix
+  .right
+    = image_tag('one-per-day-fans.png')
+  .left
+    = image_tag('with-and-without-fans.png')
+

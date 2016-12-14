@@ -1,6 +1,6 @@
 %p The Yelp data is highly dimensional, consisting of data and metadata about the Yelp users, the Yelp businesses and the actual reviews that the users entered about the businesses. Our team began work with an overview exploration of the data but as the Data Science process suggests, we returned to this point in an iterative manner as our models developed and the depth of our understanding of these data increased.
 
-.wrapper_col
+.wrapper_col.clearfix
   .left
     / Is there a better way to do this??
     %p The topics can be sub-divided into <strong>general exploration</strong>, <strong>location based analysis</strong>, <strong>network analysis</strong> and <strong>time based analysis</strong>.
@@ -8,148 +8,111 @@
 
   .right
     %strong Restaurants in Phoenix, Arizona Yelp Dataset
-    <iframe width="900" height="350" frameborder="0" scrolling="no" src="images/map.html"></iframe>
+    -#<iframe width="900" height="350" frameborder="0" scrolling="no" src="images/map.html"></iframe>
 
 %section#data-exp-base-line
-%h4 Baseline Analysis
-The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. The business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
+  %h3 Baseline Analysis
+  The data contain in total 2,700,000 reviews from 687,000 users for 86,000 businesses. The business data consist of 15 features including ID, category of business (e.g., fast food, restaurant, nightlife, etc.), city, full address, operation hours, latitude, longitude, review count, and stars earned. User data consist of 11 features including average stars, compliments, elite, number of fans, IDs of his/her friends, name, review count, vote categories, and the month start a yelp review.
 
-/image to show the highly left skewed counts.
+  .wrapper_col.clearfix
+    .right
+      = image_tag('images/skewed_data_log.png')
+    .left
+      %strong How is the data distributed?
+      %p This data is highly right skewed. This means that a large number of users have rated a small number of businesses, and similarly, the majority of businesses have received a comparatively small number of reviews. The implications of this observation for us is that using a particular user's review history to predict that user's rating for any one particular business is likely to be unfruitful (the small user history will prevail for the majority of cases). We run this analysis in (**LINK**) and we see that including a history of user reviews does not improve the prediction drastically. We later implement a 'Collaborative Filtering' approach which is able to combine this intuition by comparing what we do know about a user's history but also using information about how popular a restaurant tends to be. For more on Collaborative Filtering, please see the Matrix Factorization section below.
 
-.wrapper_col
-  .left
-    %strong How is the data distributed?
-    %p This data is highly right skewed. This means that a large number of users have rated a small number of businesses, and similarly, the majority of businesses have received a comparatively small number of reviews. The implications of this observation for us is that using a particular user's review history to predict that user's rating for any one particular business is likely to be unfruitful (the small user history will prevail for the majority of cases). We run this analysis in (**LINK**) and we see that including a history of user reviews does not improve the prediction drastically. We later implement a 'Collaborative Filtering' approach which is able to combine this intuition by comparing what we do know about a user's history but also using information about how popular a restaurant tends to be. For more on Collaborative Filtering, please see the Matrix Factorization section below.
-  .right
-    <div><a href="https://plot.ly/~ashilgard/25/" target="_blank" title="Log Distribution of Reviews per User and Reviews per Business" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/25.png" alt="Log Distribution of Reviews per User and Reviews per Business" style="max-width: 100%;width: 600px;height:350px"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a></div>
-    / <script data-plotly="ashilgard:25"  src="https://plot.ly/embed.js" async></script>
+  .wrapper_col.clearfix
+    .right
+      = image_tag('images/rating-standard-deviations.png')
+    .left
+      %strong How varied are the ratings?
+      %p
+        Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of 67% of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews, as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this, we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals  - what works for one person might not work for another. The key learning here is that since users tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business's mean score may be a poor predictor for individual user's ratings due to the variation in these ratings.
 
-.wrapper_col
-  .left
-    <div> <a href="https://plot.ly/~ashilgard/34/" target="_blank" title="Variation in Ratings" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/34.png" alt="Variation in Ratings" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="ashilgard:34"  src="https://plot.ly/embed.js" async></script>
-    </div>
-  .right
-    %strong How varied are the ratings?
-    %p Users tend to rate businesses highly with the ratings between 4 and 5 consisting of a total of 67% of all of the entered reviews in the system. In agreement with this, the users also typically tend to give many similar reviews, as we see that the majority of users have a very small range in the number of stars that they give. In contrast to this, we see that businesses tend to receive a large range of reviews. This speaks to the preferences of individuals  - what works for one person might not work for another. The key learning here is that since users tend not to deviate from their review we can possibly bias a model by using a user's mean rating to that point in time (the caveat here is that this data must exist as noted in the point above). It is also important to note that using a business's mean score may be a poor predictor for individual user's ratings due to the variation in these ratings.
-
-.wrapper_col
-  .left
+  .wrapper_col.clearfix
     %strong What are the best restaurants in Phoenix?
     / =image_tag('score_with_prior_assumption.png')
     %p Having decided to explore the culinary experience in Phoenix, we wanted to understand the scope for the best and worst ratings. The problem here is that a restaurant that receives few reviews may have a disproportionately unrepresentative sample. Therefore, considering only the raw business rating would lead to an unreliable result. Similarly, considering only the number of reviews is unintuitive as a business with many low scores cannot be considered a 'good' restaurant. The solution here is to consider both the number of reviews and the scores that those reviews receive. We make an initial assumption that a restaurant will receive a mean review and a small number of reviews will not change the score from this mean. Using this 'likelihood' technique with our mean score assumption results in the majority of restaurants being scored around the mean. However, this model has identified a number of bad and a number of good restaurants, and a small example of these is given in the tables below:
 
-  .right
-    <div><a href="https://plot.ly/~ashilgard/46/" target="_blank" title="Variation in Ratings (St. Dev.)" style="display: block; text-align: center;"><img src="https://plot.ly/~ashilgard/46.png" alt="Variation in Ratings (St. Dev.)" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    / <script data-plotly="ashilgard:46"  src="https://plot.ly/embed.js" async></script>
-    </div>
 
-%h4 The Top 5 Restaurants in Phoenix
-%table.table.table-bordered.table-striped
-  <thead>
-  <tr>
-  <th></th>
-  <th>Name</th>
-  <th>Categories</th>
-  <th>Review Count</th>
-  <th>Stars</th>
-  <th>Full Address</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <th>71452</th>
-  <td>Little Miss BBQ</td>
-  <td>['Barbeque', 'Restaurants']</td>
-  <td>944</td>
-  <td>5</td>
-  <td>4301 E University Dr\nPhoenix, AZ 85034</td>
-  </tr>
-  <tr>
-  <th>77741</th>
-  <td>El New Yorican Central Catering &amp; Delivery</td>
-  <td>'Puerto Rican', 'Spanish', 'Caribbean', 'Rest...</td>
-  <td>139</td>
-  <td>5</td>
-  <td>8433 W Peoria Ave\nPeoria, AZ 85345</td>
-  </tr>
-  <tr>
-  <th>83138</th>
-  <td>Top Marks Cafe</td>
-  <td>'Food', 'Gelato', 'Coffee &amp; Tea', 'Creperies'...</td>
-  <td>33</td>
-  <td>5</td>
-  <td>7240 E Main St\nScottsdale, AZ 85251</td>
-  </tr>
-  <tr>
-  <th>83641</th>
-  <td>The Local Press Sandwich Bar</td>
-  <td>'Sandwiches', 'Restaurants'</td>
-  <td>47</td>
-  <td>5</td>
-  <td>69 N Frontier St\nWickenburg, AZ 85390</td>
-  </tr>
-  <tr>
-  <th>84920</th>
-  <td>Tacos Chiwas</td>
-  <td>'Mexican', 'Restaurants'</td>
-  <td>89</td>
-  <td>5</td>
-  <td>1923 E McDowell Rd\nPhoenix, AZ 85006</td>
-  </tr>
-  </tbody>
+  %h4 The Top 5 Restaurants in Phoenix
+  %table.table.table-bordered.table-striped
+    %thead
+      %tr
+        %th Name
+        %th Categories
+        %th Review Count
+        %th Avg. Stars
+    <tbody>
+    <tr>
+    <td>Little Miss BBQ</td>
+    <td>Barbeque, Restaurants</td>
+    <td>944</td>
+    <td>4.794</td>
+    </tr>
+    <tr>
+    <td>El New Yorican Central Catering &amp; Delivery</td>
+    <td>Puerto Rican, Spanish, Caribbean, Restaurants</td>
+    <td>139</td>
+    <td>4.855</td>
+    </tr>
+    <tr>
+    <td>Top Marks Cafe</td>
+    <td>Food, Gelato, Coffee &amp; Tea, Creperies</td>
+    <td>33</td>
+    <td>5.000</td>
+    </tr>
+    <tr>
+    <td>The Local Press Sandwich Bar</td>
+    <td>Sandwiches, Restaurants</td>
+    <td>47</td>
+    <td>4.974</td>
+    </tr>
+    <tr>
+    <td>Tacos Chiwas</td>
+    <td>Mexican, Restaurants</td>
+    <td>89</td>
+    <td>4.915</td>
+    </tr>
+    </tbody>
 
-%h4 The Worst 5 Restaurants in Phoenix
-%table.table.table-bordered.table-striped
-  <thead>
-  <tr>
-  <th></th>
-  <th>Name</th>
-  <th>Categories</th>
-  <th>Review Count</th>
-  <th>Stars</th>
-  <th>Full Address</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <th>4011</th>
-  <td>Dairy Queen</td>
-  <td>'Fast Food', 'Restaurants'</td>
-  <td>33</td>
-  <td>1.5</td>
-  <td>3550 E Bell Rd\nPhoenix, AZ 85032</td>
-  </tr>
-  <tr>
-  <th>5213</th>
-  <td>Pizza Hut</td>
-  <td>'Italian', 'Pizza', 'Chicken Wings', 'Restaur...</td>
-  <td>7</td>
-  <td>1.0</td>
-  <td>6671 E Baseline Rd.\n#121\nMesa, AZ 85206</td>
-  </tr>
-  <tr>
-  <th>22664</th>
-  <td>KFC</td>
-  <td>'Fast Food', 'Chicken Wings', 'Restaurants'</td>
-  <td>13</td>
-  <td>1.0</td>
-  <td>1470 N 8th St\nAvondale, AZ 85323</td>
-  </tr>
-  <tr>
-  <th>42022</th>
-  <td>McDonald's</td>
-  <td>['Burgers', 'Fast Food', 'Restaurants']</td>
-  <td>18</td>
-  <td>1.5</td>
-  <td>305 E Hunt Hwy\nQueen Creek, AZ 85143</td>
-  </tr>
-  <tr>
-  <th>70078</th>
-  <td>Far East Asian Fire</td>
-  <td>['Chicken Shop', 'Asian Fusion', 'Restaurants']</td>
-  <td>25</td>
-  <td>1.5</td>
-  <td>5000 S Arizona Mills Cir\nTempe, AZ 85282</td>
-  </tr>
-  </tbody>
+  %h4 The Worst 5 Restaurants in Phoenix
+  %table.table.table-bordered.table-striped
+    %thead
+      %tr
+        %th Name
+        %th Categories
+        %th Review Count
+        %th Avg. Stars
+    <tbody>
+    <tr>
+    <td>Dairy Queen</td>
+    <td>Fast Food, Restaurants</td>
+    <td>33</td>
+    <td>1.280</td>
+    </tr>
+    <tr>
+    <td>Pizza Hut</td>
+    <td>Italian, Pizza, Chicken Wings, Restaurants</td>
+    <td>7</td>
+    <td>1.000</td>
+    </tr>
+    <tr>
+    <td>KFC</td>
+    <td>Fast Food, Chicken Wings, Restaurants</td>
+    <td>13</td>
+    <td>1.154</td>
+    </tr>
+    <tr>
+    <td>McDonald's</td>
+    <td>Burgers, Fast Food, Restaurants</td>
+    <td>18</td>
+    <td>1.313</td>
+    </tr>
+    <tr>
+    <td>Far East Asian Fire</td>
+    <td>Chicken Shop, Asian Fusion, Restaurants</td>
+    <td>25</td>
+    <td>1.211</td>
+    </tr>
+    </tbody>

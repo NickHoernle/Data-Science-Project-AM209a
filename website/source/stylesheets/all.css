@@ -11,7 +11,6 @@
 }
 
 .background{
-	/*position: 				absolute;*/
 	height: 					10em;
 	width:            100%;
 }
@@ -31,13 +30,9 @@
 	padding-right:  0;
   padding-top:    10px;
   padding-bottom: 10px;
-  background-image: url('/images/header_bg.jpg');
-}
-
-.header_rule{
-  background-color: #f2f2f2;
-  padding-top:      0px;
-  padding-bottom:   10px;
+  background-image: url('/images/phoenix.jpg');
+  background-size: contain;
+  margin-bottom: 1em;
 }
 
 .container {
@@ -80,49 +75,38 @@
 }
 
 .index{
-  background-color: #f2f2f2;
   font-size:        15px;
 }
 
 .dark_header {
-  background-color:   darkgray;
-  padding-top:        20px;
+  background-color:   lavender;
+  padding: 20px;
   margin-top:         0;
-  margin-bottom:      30px;
-  padding-bottom:     20px;
   padding-left:       20px;
-  color:              black;
 }
 
-.wrapper_col {
-  height:         400px;
-  padding-top:    10px;
-  padding-bottom: 10px;
-}
+@media (min-width: 992px) {
+  .wrapper_col {
+    padding-top:    10px;
+    padding-bottom: 10px;
+  }
 
-.left {
-  padding-right:  10px;
-  /*height:         100%;*/
-  width:          50%;
-  float:          left;
-}
+  .left {
+    padding-right:  10px;
+    width:          50%;
+    float:          left;
+  }
 
-.right {
-  padding-left:   10px;
-  /*height:         100%;*/
-  width:          50%;
-  float:          right;
+  .right {
+    padding-left:   10px;
+    width:          50%;
+    float:          right;
+  }
 }
 
 hr {
-    background-color: black;
-    /*color: black;*/
-    border: none;
+    /*background-color: black;*/
+    /*border: none;*/
     height: 2px;
     width: 100%;
-}
-
-#nav {
-  border-left-width: thin;
-  border-left-style: solid;
 }
