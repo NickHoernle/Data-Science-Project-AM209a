@@ -104,6 +104,19 @@
   }
 }
 
+.boxed_explination{
+  font-size:        small;
+  font-style:       italic;
+  border:           lavender;
+  border-style:     groove;
+  border-width:     thin;
+  padding:          10px;
+  padding-top:      5px;
+  padding-bottom:   5px;
+  margin-bottom:    10px;
+  width:            48%;
+}
+
 hr {
     /*background-color: black;*/
     /*border: none;*/
