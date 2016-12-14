@@ -4,7 +4,46 @@
 
 .wrapper_col
   .left
-    %p The table maybe? table table table
+    %h4 Table Showing the 5 Most Highly Connected Restaurants in Phoenix
+    %table.table.table-bordered.table-striped
+      %thead
+        %tr
+          %th Name
+          %th Categories
+          %th Review Count
+          %th Avg. Stars
+      <tbody>
+      <tr>
+      <td>Lo-Lo's Chicken &amp; Waffles</td>
+      <td>['Soul Food', 'Waffles', 'Southern', 'Restaura...</td>
+      <td>1218</td>
+      <td>3.992793</td>
+      </tr>
+      <tr>
+      <td>Pizzeria Bianco</td>
+      <td>['Italian', 'Pizza', 'Sandwiches', 'Restaurants']</td>
+      <td>1743</td>
+      <td>3.901141</td>
+      </tr>
+      <tr>
+      <td>FEZ</td>
+      <td>['Bars', 'Mediterranean', 'Nightlife', 'Lounge...</td>
+      <td>1093</td>
+      <td>4.155303</td>
+      </tr>
+      <tr>
+      <td>Chelsea's Kitchen</td>
+      <td>['American (Traditional)', 'Restaurants']</td>
+      <td>987</td>
+      <td>4.122492</td>
+      </tr>
+      <tr>
+      <td>St. Francis Restaurant</td>
+      <td>['American (New)', 'Restaurants']</td>
+      <td>1154</td>
+      <td>3.967682</td>
+      </tr>
+      </tbody>
   .right
     =image_tag('network_phoenix.png')
 
