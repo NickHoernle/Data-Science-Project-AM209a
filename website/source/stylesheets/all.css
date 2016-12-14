@@ -13,6 +13,7 @@
 .background{
 	height: 					10em;
 	width:            100%;
+  margin-bottom: 1.5em;
 }
 
 .heading_text{
@@ -24,15 +25,14 @@
   text-shadow:    -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   font-weight:    bolder;
   font-variant:   small-caps;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
 }
 .header{
-	padding-left: 	0;
-	padding-right:  0;
-  padding-top:    10px;
-  padding-bottom: 10px;
+  position: relative;
   background-image: url('/images/phoenix.jpg');
   background-size: contain;
-  margin-bottom: 1em;
 }
 
 .container {
