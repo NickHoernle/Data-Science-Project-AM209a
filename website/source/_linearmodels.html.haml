@@ -4,6 +4,7 @@
 <iframe width="900" height="800" frameborder="0" scrolling="no" src="//plot.ly/~ashilgard/52.embed"></iframe>
 
 %p
+  Note how "chicken wings", "fast food", and "buffets" are strong predictors of a low rating, whereas "parking lot", "alcohol", and simply "food" are very strong positive predictors of a high one.
 
 %p We also tried using the baseline correction to retrain a Lasso regression model. We further split the training dataset to be used to build a history of user's reviews. The problem that was incurred here is that we needed to sacrifice half of the training data to purely use in building this history metric, however, this formed a strong predictor and a resultant RMSE of <strong>1.240</strong> was achieved.
 
