@@ -2,8 +2,6 @@
 
 Contributors: Sophie, Nick, Andrew, and Reiko
 
-Website: [is here](http://yelp-challenge-ac209a-website.s3-website-us-east-1.amazonaws.com/)
-
 ## Table of Contents
 
 - [Literature Review](./literature_review/literature_review.pdf)
