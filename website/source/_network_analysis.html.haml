@@ -1,8 +1,6 @@
-%p Restaurants can be viewed as a correlation network based on the level of user likeness. Two businesses are positively correlated when users gave both businesses the same (or similar) number of stars; and are negatively correlated when users rate a business as good but the other as bad. In this network analysis, we aimed to find the most highly-correlated restaurants based on the network structure. When the star-ranking is positively correlated between two businesses, they are connected with a red edge in the business network. When the star-ranking is negatively correlated between two businesses, they are connected with a blue edge. Spearman's ranked correlation coefficients were calculated for the top-100 frequently reviewed businesses in Phoenix. We applied PageRank algorithm to infer the importance of a restaurant in the network and predict stars.
+%p Restaurants can be viewed as a correlation network based on how similarly users view them. We define two businesses as being positively correlated when users tend to give both businesses the same (or similar) number of stars, and negatively correlated when users tend to rate one business as good but the other as bad. Constructing a network in this way, we aimed to find the most highly-correlated restaurants based on the network structure. When the star-ranking is positively correlated between two businesses, they are connected with a red edge in the business network. When the star-ranking is negatively correlated between two businesses, they are connected with a blue edge. We then calculated Spearman's ranked correlation coefficients for the top-100 frequently reviewed businesses in Phoenix, and applied the PageRank algorithm to infer the importance of restaurants in the network. We then used the PageRank rankings to construct a simple model to predict stars.
 
-%p Nodes represent business IDs, and X and Y axes are their longitude and latitude. Degree indicates the total number of edges a node has. The median value was higher in the positive correlation network (63.0) compared with the negative correlation network (28.0), suggesting that there are more restaurants with the similar level of likeness by users in Phoenix.
-
-.wrapper_col
+.wrapper_col.clearfix
   .left
     %h4 Table Showing the 5 Most Highly Connected Restaurants in Phoenix
     %table.table.table-bordered.table-striped
@@ -15,7 +13,7 @@
       <tbody>
       <tr>
       <td>Lo-Lo's Chicken &amp; Waffles</td>
-      <td>Soul Food, Waffles, Southern, Restaura...</td>
+      <td>Soul Food, Waffles, Southern, Restaurants</td>
       <td>1218</td>
       <td>3.99</td>
       </tr>
@@ -27,7 +25,7 @@
       </tr>
       <tr>
       <td>FEZ</td>
-      <td>Bars, Mediterranean, Nightlife, Lounge...</td>
+      <td>Bars, Mediterranean, Nightlife, Lounges</td>
       <td>1093</td>
       <td>4.16</td>
       </tr>
@@ -47,10 +45,13 @@
   .right
     =image_tag('network_phoenix.png')
 
-.wrapper_col
-  .left
-    %p Highly connected restaurants in the network (i.e. nodes with more edges) are highly reviewed by users who also reviewed the neighboring restaurants. Thus, it can provide information on how users liked both connected restaurants. To know the highly connected restaurants, we calculated <a href='#eigenvector_centrality_explanation'><strong>eigenvector centrality</strong></a> in the combined positive and negative network. The eigenvector centrality assigns relative scores to all nodes in the network based on the connectivity of the node and its neighbors. The top 95% highly connected restaurants are shown in the table above.
+    %p
+      %small Nodes represent business IDs, and X and Y axes are their longitude and latitude. Degree indicates the total number of edges a node has. The median value was higher in the positive correlation network (63.0) compared with the negative correlation network (28.0), suggesting that there are more restaurants with the similar level of likeness by users in Phoenix.
 
+.wrapper_col.clearfix
   .right.boxed_explanation
     %h5#eigenvector_centrality_explanation <strong>What is Eigenvector Centrality?</strong>
-    %p If you consider a random walk over the network, where at any individual restaurant node, you travel to the next restaurant node with probability proportional to the strength of their correlation, then the scores determined by eigenvector centrality will be the relative proportion of time you spend at each restaurant node. This method, made famous for its use in Google's PageRank algorithm, provides an intuitive and computationally tractable way of ranking nodes in general graphs.
+    %p If you consider a random walk over a restaurant network, where at any individual restaurant node at any given time step, you travel to the next restaurant node with probability proportional to the strength of their correlation, then the scores determined by eigenvector centrality will be the relative proportion of time you spend at each restaurant node. This method, made famous for its use in Google's PageRank algorithm, provides an intuitive and computationally tractable way of ranking nodes in general graphs.
+  .left
+    %p Highly connected restaurants in the network (i.e. nodes with more edges) are highly reviewed by users who also reviewed the neighboring restaurants. Thus, the network provides information on how users liked both connected restaurants. To find the "most imporant" restaurants, we calculated their <a href='#eigenvector_centrality_explanation'><strong>eigenvector centrality</strong></a> in the combined positive and negative network. Eigenvector centrality assigns relative scores to all nodes in the network based on the connectivity of the node and its neighbors. The top 95% highly connected restaurants are shown in the table above.
+
