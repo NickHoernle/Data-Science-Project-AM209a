@@ -1,13 +1,16 @@
+%h4 User Recommendation Models:
 %p
-  %h4 User Recommendation Models:
-  One of the major conclusions of this project is that the sparsity of the user-ratings matrix makes it very difficult to do better than simple popularity recommenders for the vast majority of users. In particular, it is nearly impossible to infer much about the users who give only a single rating, and as we see in the time analysis, this single rating may not even be indicative of typical rating behavior - in particular it is likely to be more extreme than usual, likely because a user who gives a single rating is only using Yelp because he or she has had a particularly good or bad experience.
-
-
+  One of the major conclusions of this project is that, because of the sparsity of the user-ratings matrix or otherwise, it's very difficult to do better than baseline rating predictions for the majority of users. In particular, it is nearly impossible to infer much about the users who give only a single rating, and as we see in the time analysis, this single rating may not even be indicative of typical rating behavior - in particular it is likely to be more extreme than usual, likely because a user who gives a single rating is only using Yelp because he or she has had a particularly good or bad experience.
 %p
-  %h4 Data Trends:
+  However, with that said, we were able to obtain our best RMSE of 1.2236 using simple versions of many techniques from the BellKor solution -- a matrix factorization model that makes use of time-changing baseline predictors, trained using gradient descent. But, as impressive as it sounds, that result is only about 0.013 points better than our best <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/baseline_model/baseline_models.ipynb'>baseline model</a> performance, and only about 0.001 points better than a baseline predictor-only solution using none of those techniques.
+
+%h4 Data Trends:
+%p
   One of the more enjoyable aspects of this project was the data exploration. In particular, we were able to identify a number of interesting trends in the data sets that either confirmed or made us reconsider previously held notions about consumer opinion of restaurant quality. In the future, we would likely pursue these other aspects of the Yelp Data Challenge, like trying to predict the rise and fall of restaurant trends or whether a good or bad location is enough to cause a business to succeed or fail.
 
+%h4 Managing Large Data Sets:
+%p
+  Throughout this project we encountered memory errors and long computation times. Although we found and implemented some workarounds, if we were to continue this work in the future, we would likely switch away from storing our data as in-memory numpy and pandas objects and investigate using databases or remote clusters instead. Sparse matrix data structures provide a good platform for storing and processing these vast review matrices but the computation time required to create them often negated their usefulness down the line.
 
 %p
-  %h4 Managing Large Data Sets:
-  Throughout this project we encountered memory errors and long computation times. Although we found and implemented some workarounds, if we were to continue this work in the future, we would likely switch away from storing our data as in-memory numpy and pandas objects and investigate using databases or remote clusters instead. Sparse matrix datastructures provide a good platform for storing and processing these vast review matrices but the computation taken in compiling these matrices often negated their usefulness down the line.
+  Thanks for teaching the course (and reading this far)!

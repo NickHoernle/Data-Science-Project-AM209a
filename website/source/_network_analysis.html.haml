@@ -1,4 +1,4 @@
-%p Restaurants can be viewed as a correlation network based on how similarly users view them. We define two businesses as being positively correlated when users tend to give both businesses the same (or similar) number of stars, and negatively correlated when users tend to rate one business as good but the other as bad. Constructing a network in this way, we aimed to find the most highly-correlated restaurants based on the network structure. When the star-ranking is positively correlated between two businesses, they are connected with a red edge in the business network. When the star-ranking is negatively correlated between two businesses, they are connected with a blue edge. We then calculated Spearman's ranked correlation coefficients for the top-100 frequently reviewed businesses in Phoenix, and applied the PageRank algorithm to infer the importance of restaurants in the network. We then used the PageRank rankings to construct a simple model to predict stars.
+%p Restaurants can be viewed as a correlation network based on how similarly users view them. We define two businesses as being positively correlated when users tend to give both businesses the same (or similar) number of stars, and negatively correlated when users tend to rate one business as good but the other as bad. Constructing a network in this way, we aimed to find the most highly-correlated restaurants based on the network structure. When the star-ranking is positively correlated between two businesses, they are connected with a red edge in the business network. When the star-ranking is negatively correlated between two businesses, they are connected with a blue edge. We then calculated Spearman's ranked correlation coefficients for the top-100 frequently reviewed businesses in Phoenix, and applied the PageRank algorithm to infer the importance of restaurants in the network. We then used the PageRank rankings to construct a simple model to predict stars. You can check out the notebook with this analysis <a href='https://github.com/NickHoernle/Data-Science-Project-AM209a/blob/master/final_project/Network_final.ipynb'>here</a>.
 
 .wrapper_col.clearfix
   .left
@@ -43,7 +43,7 @@
       </tr>
       </tbody>
   .right
-    =image_tag('network_phoenix.png')
+    =image_tag('network_phoenix.png', style: 'height:350px')
 
     %p
       %small Nodes represent business IDs, and X and Y axes are their longitude and latitude. Degree indicates the total number of edges a node has. The median value was higher in the positive correlation network (63.0) compared with the negative correlation network (28.0), suggesting that there are more restaurants with the similar level of likeness by users in Phoenix.
