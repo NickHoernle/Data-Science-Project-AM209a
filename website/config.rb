@@ -94,7 +94,7 @@ helpers do
   end
 
   def render_references
-    return "<ul>#{references.map{|k,v| "<li id='ref-#{k}'>#{v}</li>"}.join("\n")}</ul>".html_safe
+    return "<ol>#{references.map{|k,v| "<li id='ref-#{k}'>#{v}</li>"}.join("\n")}</ol>".html_safe
   end
 
   def cite(ref)
